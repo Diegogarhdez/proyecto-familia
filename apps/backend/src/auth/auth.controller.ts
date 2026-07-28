@@ -3,7 +3,13 @@ import type { Request } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { JoinDto } from './dto/join.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
+
+type JwtUserPayload = {
+  sub: string;
+  email: string;
+};
 
 @Controller('auth')
 export class AuthController {
@@ -12,6 +18,11 @@ export class AuthController {
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
+  }
+
+  @Post('join')
+  async joinFamily(@Body() joinDto: JoinDto) {
+    return this.authService.joinFamily(joinDto);
   }
 
   @Post('login')
@@ -23,10 +34,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard) 
   @Get('me')
   getProfile(@Req() req: Request) {
-    // Al pasar por el Guard, se inyectó req.user
-    return {
-      message: '¡Bienvenido a la ruta protegida!',
-      usuarioAutenticado: req['user'], 
-    };
+    const user = req['user'] as JwtUserPayload;
+    return this.authService.getProfile(user.sub);
   }
 }

@@ -13,7 +13,6 @@ export class RegisterDto {
   @IsNotEmpty({ message: 'El nombre no puede estar vacío' })
   name: string;
 
-  @IsUUID('4', { message: 'El familyId debe ser un UUID válido' })
-  @IsNotEmpty()
-  familyId: string;
+  @IsString()
+  familyName: string;
 }

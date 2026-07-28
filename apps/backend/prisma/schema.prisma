@@ -17,6 +17,7 @@ enum Role {
 model Family {
   id        String   @id @default(uuid())
   name      String
+  inviteCode String   @unique @default(uuid())
   createdAt DateTime @default(now())
 
   users     User[]

@@ -21,8 +21,6 @@ export class JwtAuthGuard implements CanActivate {
         secret: this.configService.get('JWT_SECRET') // Leemos del .env
       });
       
-      // Magia: Pegamos los datos descifrados del usuario al objeto "request"
-      // Así estarán disponibles en nuestro controlador
       request['user'] = payload;
     } catch {
       throw new UnauthorizedException('Token inválido o expirado');
