@@ -1,44 +1,37 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // Ajusta la ruta si es necesario
-import { apiClient } from '../api/client'; // Ajusta la ruta si es necesario
+import { apiClient } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Evita que la página se recargue al enviar el formulario
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setError(null);
     setIsLoading(true);
 
     try {
-      // 1. Enviamos las credenciales al backend
       const response = await apiClient.post('/auth/login', {
         email,
         password,
       });
 
-      // 2. Extraemos el token que fabricó NestJS
       const accessToken = response.data.accessToken ?? response.data.access_token;
 
       if (!accessToken) {
         throw new Error('El backend no devolvió un token');
       }
 
-      // 3. Lo guardamos en nuestro estado global (lo que a su vez lo guarda en localStorage)
       login(accessToken);
-
-      // 4. Redirigimos al usuario a una página protegida (por ejemplo, al Dashboard)
       navigate('/dashboard', { replace: true });
-      
     } catch (err: any) {
-      // Si el backend devuelve un 401, lo capturamos aquí
       if (err.response?.status === 401) {
         setError('Correo o contraseña incorrectos');
       } else {
@@ -50,55 +43,108 @@ export const Login = () => {
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
-      <h2>Iniciar Sesión</h2>
-      
-      {error && (
-        <div style={{ color: 'red', marginBottom: '15px', padding: '10px', backgroundColor: '#ffe6e6', borderRadius: '4px' }}>
-          {error}
-        </div>
-      )}
+    <main className="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+        <section className="relative overflow-hidden rounded-[32px] border border-amber-100 bg-white/80 p-8 shadow-[0_25px_80px_rgba(15,23,42,0.12)] backdrop-blur">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(251,191,36,0.15),_transparent_30%),radial-gradient(circle_at_bottom_left,_rgba(45,212,191,0.13),_transparent_26%)]" />
+          <div className="relative flex h-full flex-col justify-between gap-10">
+            <div className="inline-flex w-fit items-center gap-2 rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-900">
+              <span className="h-2 w-2 rounded-full bg-amber-500" />
+              Centro familiar
+            </div>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        <div>
-          <label htmlFor="email" style={{ display: 'block', marginBottom: '5px' }}>Correo Electrónico</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
-          />
-        </div>
+            <div className="max-w-xl">
+              <h1 className="text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
+                Vuelve a casa con un solo clic.
+              </h1>
+              <p className="mt-4 max-w-lg text-base leading-7 text-slate-600 sm:text-lg">
+                Gestiona la familia con calma: compras compartidas, tareas pendientes, calendario y todo lo que necesitáis
+                para organizar el día a día con más claridad.
+              </p>
+            </div>
 
-        <div>
-          <label htmlFor="password" style={{ display: 'block', marginBottom: '5px' }}>Contraseña</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
-          />
-        </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {[
+                ['Compras', 'Siempre sincronizadas'],
+                ['Calendario', 'Pensado para todos'],
+                ['Tareas', 'Pendientes visibles'],
+              ].map(([title, text]) => (
+                <article key={title} className="rounded-3xl border border-white/70 bg-white p-4 shadow-sm">
+                  <div className="text-sm font-semibold text-slate-900">{title}</div>
+                  <p className="mt-1 text-sm text-slate-600">{text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
 
-        <button 
-          type="submit" 
-          disabled={isLoading}
-          style={{ padding: '10px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '4px', cursor: isLoading ? 'not-allowed' : 'pointer' }}
-        >
-          {isLoading ? 'Cargando...' : 'Entrar'}
-        </button>
-      </form>
+        <section className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.10)] sm:p-8">
+          <div className="mb-8">
+            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-emerald-700">Acceso</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">Iniciar sesión</h2>
+            <p className="mt-2 text-sm text-slate-600">
+              Entra para ver tu espacio familiar, tus compras y los cambios en tiempo real.
+            </p>
+          </div>
 
-      <p style={{ marginTop: '15px', textAlign: 'center' }}>
-        ¿No tienes cuenta? <Link to="/register">Regístrate</Link>
-      </p>
-      <p style={{ marginTop: '8px', textAlign: 'center' }}>
-        ¿Tienes un código de invitación? <Link to="/join">Únete aquí</Link>
-      </p>
-    </div>
+          {error && (
+            <div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <label className="block">
+              <span className="mb-2 block text-sm font-medium text-slate-700">Correo electrónico</span>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-100"
+                placeholder="tu@correo.com"
+              />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-sm font-medium text-slate-700">Contraseña</span>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-100"
+                placeholder="Escribe tu contraseña"
+              />
+            </label>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="inline-flex w-full items-center justify-center rounded-2xl bg-emerald-500 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-200 transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {isLoading ? 'Cargando...' : 'Entrar'}
+            </button>
+          </form>
+
+          <div className="mt-6 space-y-3 text-center text-sm text-slate-600">
+            <p>
+              ¿No tienes cuenta?{' '}
+              <Link className="font-semibold text-emerald-700 hover:text-emerald-800" to="/register">
+                Regístrate
+              </Link>
+            </p>
+            <p>
+              ¿Tienes un código de invitación?{' '}
+              <Link className="font-semibold text-emerald-700 hover:text-emerald-800" to="/join">
+                Únete aquí
+              </Link>
+            </p>
+          </div>
+        </section>
+      </div>
+    </main>
   );
 };

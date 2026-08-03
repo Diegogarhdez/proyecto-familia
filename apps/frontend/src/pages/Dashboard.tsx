@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { apiClient } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
@@ -7,31 +7,32 @@ const features = [
   {
     title: 'Calendario familiar',
     description: 'Eventos, reuniones y recordatorios compartidos en un solo lugar.',
-    accent: 'linear-gradient(135deg, #ffb36b 0%, #ff7a59 100%)',
+    accent: 'bg-amber-400',
     kind: 'feature' as const,
   },
   {
     title: 'Lista de la compra',
     description: 'Añade lo que falta en casa y tenlo a mano desde cualquier dispositivo.',
-    accent: 'linear-gradient(135deg, #72d0c6 0%, #2fbf9e 100%)',
+    accent: 'bg-emerald-400',
     kind: 'feature' as const,
+    href: '/shopping',
   },
   {
     title: 'Rutinas semanales',
     description: 'Organiza tareas por días para que todo fluya mejor en familia.',
-    accent: 'linear-gradient(135deg, #a58bff 0%, #6d5ef7 100%)',
+    accent: 'bg-sky-400',
     kind: 'feature' as const,
   },
   {
     title: 'Ideas y planes',
     description: 'Una zona para proponer salidas, actividades y planes del fin de semana.',
-    accent: 'linear-gradient(135deg, #f7c46c 0%, #e39b3d 100%)',
+    accent: 'bg-orange-400',
     kind: 'feature' as const,
   },
   {
     title: 'Tareas pendientes',
     description: 'Un vistazo rápido a lo que queda por hacer hoy o durante la semana.',
-    accent: 'linear-gradient(135deg, #facc15 0%, #f59e0b 100%)',
+    accent: 'bg-yellow-400',
     kind: 'tasks' as const,
   },
 ];
@@ -63,7 +64,9 @@ export const Dashboard = () => {
       try {
         const response = await apiClient.get<Profile>('/auth/me');
 
-        if (!alive) return;
+        if (!alive) {
+          return;
+        }
 
         setProfile(response.data);
         localStorage.setItem('displayName', response.data.name);
@@ -96,6 +99,7 @@ export const Dashboard = () => {
   const familyName = profile?.family.name ?? localStorage.getItem('familyName') ?? 'Familia pendiente';
   const familyCode = profile?.familyCode ?? localStorage.getItem('familyCode');
   const isAdmin = profile?.role === 'ADMIN';
+  const avatarLetter = (displayName.trim().charAt(0) || 'F').toUpperCase();
 
   const handleLogout = () => {
     logout();
@@ -103,270 +107,128 @@ export const Dashboard = () => {
   };
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background:
-          'radial-gradient(circle at top left, #ffb36b2e, transparent 32%), radial-gradient(circle at top right, #6d5ef729, transparent 28%), linear-gradient(180deg, #0f172a 0%, #111827 100%)',
-        color: 'white',
-        padding: '24px',
-        boxSizing: 'border-box',
-      }}
-    >
-      <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        <header
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '16px',
-            padding: '16px 18px',
-            borderRadius: '18px',
-            background: '#0f172ab8',
-            border: '1px solid #94a3b82e',
-            backdropFilter: 'blur(18px)',
-            boxShadow: '0 24px 60px #0f172a59',
-          }}
-        >
-          <button
-            type="button"
-            onClick={handleLogout}
-            style={{
-              appearance: 'none',
-              border: 'none',
-              padding: '10px 14px',
-              borderRadius: '999px',
-              background: '#f8717130',
-              color: '#fecaca',
-              fontWeight: 700,
-              cursor: 'pointer',
-            }}
-          >
-            Cerrar sesión
-          </button>
+    <main className="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-7xl flex-col gap-6">
+        <header className="flex flex-col gap-4 rounded-[28px] border border-white/70 bg-white/85 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.10)] backdrop-blur sm:p-5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="inline-flex items-center justify-center rounded-full bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-700 transition hover:bg-rose-100"
+            >
+              Cerrar sesión
+            </button>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '0.95rem', color: 'lightgray' }}>Hola,</div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 700 }}>{displayName}</div>
+            <div>
+              <p className="text-sm font-medium text-slate-500">Espacio familiar</p>
+              <h1 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">{familyName}</h1>
+            </div>
+          </div>
 
+          <div className="flex items-center gap-3 self-start lg:self-auto">
+            <div className="text-right">
+              <p className="text-sm text-slate-500">Hola</p>
+              <p className="text-base font-semibold text-slate-900">{displayName}</p>
               {isAdmin && familyCode ? (
-                <div
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    marginTop: '6px',
-                    padding: '6px 10px',
-                    borderRadius: '999px',
-                    background: '#38bdf81f',
-                    color: '#bae6fd',
-                    fontSize: '0.9rem',
-                    fontWeight: 600,
-                  }}
-                >
-                  <span style={{ letterSpacing: '0.08em' }}>Código familia</span>
-                  <span style={{ opacity: 0.9 }}>·</span>
-                  <span style={{ fontFamily: 'monospace' }}>{familyCode}</span>
+                <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700">
+                  <span>Código de familia</span>
+                  <span className="font-mono tracking-[0.2em]">{familyCode}</span>
                 </div>
               ) : (
-                <div
-                  style={{
-                    display: 'inline-flex',
-                    marginTop: '6px',
-                    padding: '6px 10px',
-                    borderRadius: '999px',
-                    background: '#94a3b81f',
-                    color: 'lightgray',
-                    fontSize: '0.85rem',
-                    fontWeight: 600,
-                  }}
-                >
+                <div className="mt-2 inline-flex items-center rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-500">
                   Código oculto para miembros
                 </div>
               )}
             </div>
 
-            <div
-              aria-hidden="true"
-              style={{
-                width: '54px',
-                height: '54px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%)',
-                display: 'grid',
-                placeItems: 'center',
-                boxShadow: '0 10px 28px #60a5fa47',
-                fontSize: '1.5rem',
-              }}
-            >
-              👤
+            <div className="grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-amber-300 to-emerald-300 text-lg font-bold text-white shadow-lg shadow-amber-100">
+              {avatarLetter}
             </div>
           </div>
         </header>
 
         {error && (
-          <section
-            style={{
-              padding: '16px 18px',
-              borderRadius: '18px',
-              background: '#7f1d1dcc',
-              border: '1px solid #f8717147',
-              color: '#fecaca',
-            }}
-          >
+          <section className="rounded-[24px] border border-rose-200 bg-rose-50 px-5 py-4 text-sm text-rose-700">
             {error}
           </section>
         )}
 
-        <section
-          style={{
-            borderRadius: '24px',
-            padding: '28px',
-            background: 'linear-gradient(135deg, #0f172af2, #111827db)',
-            border: '1px solid #94a3b829',
-            boxShadow: '0 32px 70px #0f172a66',
-          }}
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
-            <span
-              style={{
-                display: 'inline-flex',
-                alignSelf: 'flex-start',
-                padding: '6px 10px',
-                borderRadius: '999px',
-                background: '#f973161f',
-                color: '#fdba74',
-                fontSize: '0.85rem',
-                fontWeight: 700,
-                letterSpacing: '0.02em',
-              }}
-            >
+        <section className="rounded-[32px] border border-white/70 bg-white/85 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] sm:p-8">
+          <div className="mb-8 flex flex-col gap-4">
+            <span className="inline-flex w-fit rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-amber-800">
               Dashboard familiar
             </span>
-            <h1 style={{ margin: 0, fontSize: '2.3rem', lineHeight: 1.05 }}>
-              {isLoading ? 'Cargando tu espacio familiar...' : 'Todo lo importante de la familia, en un mismo sitio.'}
-            </h1>
-            <p style={{ margin: 0, color: 'lightgray', maxWidth: '680px', fontSize: '1.02rem' }}>
-              {isLoading
-                ? 'Estamos trayendo tu nombre real, tu familia y tus permisos desde el servidor.'
-                : 'Aquí tendrás acceso visual a las herramientas principales. Aún no están conectadas, pero esta es la base para organizar la vida familiar de una forma clara y agradable.'}
-            </p>
+            <div className="max-w-3xl">
+              <h2 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+                {isLoading ? 'Cargando tu espacio familiar...' : 'Todo lo importante de la familia, en un mismo sitio.'}
+              </h2>
+              <p className="mt-3 text-base leading-7 text-slate-600">
+                {isLoading
+                  ? 'Estamos trayendo tu nombre real, tu familia y tus permisos desde el servidor.'
+                  : 'Aquí tendrás acceso visual a las herramientas principales. Aún no están conectadas, pero esta es la base para organizar la vida familiar de una forma clara y agradable.'}
+              </p>
+            </div>
           </div>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-              gap: '16px',
-            }}
-          >
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {(isLoading ? features.slice(0, 2) : features).map((feature) => (
               <article
                 key={feature.title}
-                style={{
-                  minHeight: '190px',
-                  padding: '18px',
-                  borderRadius: '18px',
-                  background: 'linear-gradient(180deg, #1e293bf2, #0f172af5)',
-                  border: '1px solid #94a3b824',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  gap: '14px',
-                }}
+                className="flex min-h-[210px] flex-col justify-between rounded-[28px] border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-5 shadow-sm"
               >
                 <div>
-                  <div
-                    style={{
-                      width: '52px',
-                      height: '52px',
-                      borderRadius: '16px',
-                      background: feature.accent,
-                    }}
-                  />
-                  <h2 style={{ margin: '14px 0 8px', fontSize: '1.15rem' }}>{feature.title}</h2>
+                  <div className={`h-12 w-12 rounded-2xl ${feature.accent}`} />
+                  <h3 className="mt-4 text-lg font-semibold text-slate-900">{feature.title}</h3>
                   {feature.kind === 'tasks' ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div className="mt-4 space-y-3">
                       {[
                         'Añadir la compra de esta semana',
                         'Revisar eventos del calendario familiar',
                         'Asignar quién recoge a los niños',
                         'Preparar la lista de tareas del fin de semana',
                       ].map((task) => (
-                        <div
-                          key={task}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '10px',
-                            padding: '10px 0',
-                            borderBottom: '1px solid #334155',
-                          }}
-                        >
-                          <span
-                            style={{
-                              width: '10px',
-                              height: '10px',
-                              borderRadius: '50%',
-                              background: '#f59e0b',
-                              flexShrink: 0,
-                            }}
-                          />
-                          <span style={{ color: 'lightgray', lineHeight: 1.4 }}>{task}</span>
+                        <div key={task} className="flex items-start gap-3 border-b border-slate-200 pb-3 last:border-b-0 last:pb-0">
+                          <span className="mt-1 h-2.5 w-2.5 rounded-full bg-amber-400" />
+                          <span className="text-sm leading-6 text-slate-600">{task}</span>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p style={{ margin: 0, color: 'lightgray', lineHeight: 1.5 }}>{feature.description}</p>
+                    <p className="mt-3 text-sm leading-6 text-slate-600">{feature.description}</p>
                   )}
                 </div>
-                <div
-                  style={{
-                    alignSelf: 'flex-start',
-                    padding: '6px 10px',
-                    borderRadius: '999px',
-                    background: '#ffffff10',
-                    color: '#e2e8f0',
-                    fontSize: '0.85rem',
-                  }}
-                >
-                  Próximamente
-                </div>
+
+                {feature.title === 'Lista de la compra' ? (
+                  <Link
+                    to="/shopping"
+                    className="mt-5 inline-flex w-fit items-center rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100"
+                  >
+                    Abrir lista
+                  </Link>
+                ) : (
+                  <span className="mt-5 inline-flex w-fit items-center rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-500">
+                    Próximamente
+                  </span>
+                )}
               </article>
             ))}
           </div>
         </section>
 
-        <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
-          <div
-            style={{
-              padding: '18px',
-              borderRadius: '18px',
-              background: '#0f172ab8',
-              border: '1px solid #94a3b824',
-            }}
-          >
-            <div style={{ fontSize: '0.9rem', color: '#93c5fd' }}>Familia activa</div>
-            <div style={{ marginTop: '6px', fontSize: '1.2rem', fontWeight: 700 }}>{familyName}</div>
-          </div>
+        <section className="grid gap-4 md:grid-cols-2">
+          <article className="rounded-[28px] border border-slate-200 bg-white/85 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+            <p className="text-sm font-medium text-slate-500">Familia activa</p>
+            <p className="mt-2 text-xl font-semibold text-slate-900">{familyName}</p>
+          </article>
 
-          <div
-            style={{
-              padding: '18px',
-              borderRadius: '18px',
-              background: '#0f172ab8',
-              border: '1px solid #94a3b824',
-            }}
-          >
-            <div style={{ fontSize: '0.9rem', color: '#86efac' }}>Estado</div>
-            <div style={{ marginTop: '6px', fontSize: '1.2rem', fontWeight: 700 }}>
+          <article className="rounded-[28px] border border-slate-200 bg-white/85 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+            <p className="text-sm font-medium text-slate-500">Estado</p>
+            <p className="mt-2 text-xl font-semibold text-slate-900">
               {profile?.role === 'ADMIN' ? 'Eres administrador de la familia' : 'Miembro de la familia'}
-            </div>
-          </div>
+            </p>
+          </article>
         </section>
-
       </div>
-    </div>
+    </main>
   );
 };

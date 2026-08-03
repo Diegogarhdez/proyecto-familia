@@ -21,7 +21,7 @@ model Family {
   createdAt DateTime @default(now())
 
   users     User[]
-
+  shoppingItems ShoppingItem[]
   @@map("families")
 }
 
@@ -37,4 +37,16 @@ model User {
   family       Family   @relation(fields: [familyId], references: [id])
 
   @@map("users")
+}
+
+model ShoppingItem {
+  id        String   @id @default(uuid())
+  name      String   // Ej: "Leche", "Huevos"
+  quantity  Int      @default(1)
+  isBought  Boolean  @default(false) // Por defecto no está comprado
+  createdAt DateTime @default(now()) // Para ordenarlos por fecha
+
+  // Relación: Este producto pertenece a una Familia
+  familyId  String
+  family    Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
 }

@@ -5,6 +5,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { Register } from './pages/Register';
 import { JoinFamily } from './pages/JoinFamily';
 import { Dashboard } from './pages/Dashboard';
+import { ShoppingList } from './pages/ShoppingList';
 
 export default function App() {
   return (
@@ -23,6 +24,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/shopping"
+            element={
+              <ProtectedRoute>
+                <ShoppingList />
               </ProtectedRoute>
             }
           />
