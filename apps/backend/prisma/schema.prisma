@@ -42,7 +42,7 @@ model User {
 model ShoppingItem {
   id        String   @id @default(uuid())
   name      String   // Ej: "Leche", "Huevos"
-  quantity  Int      @default(1)
+  quantity  Int      @default(1) 
   isBought  Boolean  @default(false) // Por defecto no está comprado
   createdAt DateTime @default(now()) // Para ordenarlos por fecha
 
