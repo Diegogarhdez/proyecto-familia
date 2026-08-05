@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, IsNotEmpty, Min } from 'class-validator';
+import { IsInt, IsOptional, IsString, IsNotEmpty, Min, Max } from 'class-validator';
 
 export class CreateShoppingDto {
   @IsString()
@@ -9,6 +9,7 @@ export class CreateShoppingDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
+  @Max(999)
   @IsOptional()
   quantity?: number;
 }
