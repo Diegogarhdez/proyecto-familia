@@ -2,7 +2,11 @@ import { WebSocketGateway, WebSocketServer, SubscribeMessage } from '@nestjs/web
 import { Server, Socket } from 'socket.io';
 
 // Habilitamos CORS para que React pueda conectarse sin bloqueos
-@WebSocketGateway({ cors: { origin: '*' } })
+@WebSocketGateway({
+  cors: {
+    origin: '*',
+  },
+})
 export class ShoppingGateway {
   @WebSocketServer()
   server: Server;
