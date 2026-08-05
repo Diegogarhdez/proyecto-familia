@@ -4,7 +4,7 @@ services:
     env: node
     plan: free
     region: oregon
-    buildCommand: pnpm install && pnpm --dir apps/backend build
+    buildCommand: pnpm install && pnpm --dir apps/backend build && pnpm --dir apps/backend exec prisma migrate deploy
     startCommand: pnpm --dir apps/backend run start:prod
     healthCheckPath: /api
     envVars:
