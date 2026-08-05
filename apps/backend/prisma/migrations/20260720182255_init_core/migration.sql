@@ -5,10 +5,14 @@ CREATE TYPE "Role" AS ENUM ('ADMIN', 'MEMBER');
 CREATE TABLE "families" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "inviteCode" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "families_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "families_inviteCode_key" ON "families"("inviteCode");
 
 -- CreateTable
 CREATE TABLE "users" (
