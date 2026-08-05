@@ -28,3 +28,18 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_familyId_fkey" FOREIGN KEY ("familyId") REFERENCES "families"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- CreateTable
+CREATE TABLE "ShoppingItem" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "quantity" INTEGER NOT NULL DEFAULT 1,
+    "isBought" BOOLEAN NOT NULL DEFAULT FALSE,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "familyId" TEXT NOT NULL,
+
+    CONSTRAINT "ShoppingItem_pkey" PRIMARY KEY ("id")
+);
+
+-- AddForeignKey
+ALTER TABLE "ShoppingItem" ADD CONSTRAINT "ShoppingItem_familyId_fkey" FOREIGN KEY ("familyId") REFERENCES "families"("id") ON DELETE CASCADE ON UPDATE CASCADE;
