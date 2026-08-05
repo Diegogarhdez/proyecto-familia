@@ -5,21 +5,31 @@ import { ValidationPipe } from '@nestjs/common'; // Si lo tenías de antes
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // 🔴 CORS A PRUEBA DE FALLOS
   app.enableCors({
-    origin: [
-      'http://localhost:5173',                     // Tu entorno local
-      'https://proyecto-familia-five.vercel.app', // Tu frontend en Vercel
-      process.env.FRONTEND_URL,                    // Por si añades la variable en Render
-    ].filter(Boolean) as string[],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    origin: (origin, callback) => {
+      // Lista de orígenes permitidos
+      const allowedOrigins = [
+        'http://localhost:5173',
+        'https://proyecto-familia-five.vercel.app',
+      ];
+
+      // Si no hay origin (ej. llamadas de Postman/móvil) o el origen está en la lista permitida
+      if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+        callback(null, true);
+      } else {
+        callback(null, true); // O cambiar por callback(new Error('CORS no permitido'))
+      }
+    },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
+  app.setGlobalPrefix('api');
 
-  app.setGlobalPrefix('api'); 
-  
-  app.useGlobalPipes(new ValidationPipe());
-
-  await app.listen(3000);
+  await app.listen(process.env.PORT || 3000);
 }
+
 bootstrap();
+
