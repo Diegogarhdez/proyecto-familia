@@ -4,20 +4,15 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // 🔴 ARRAY EXPLÍCITO DE ORIGENES PERMITIDOS
+  // Permite responder dinámicamente al origen de Vercel
   app.enableCors({
-    origin: [
-      'https://proyecto-familia-five.vercel.app', // Tu frontend en producción
-      'http://localhost:5173',                    // Tu frontend local
-      'http://localhost:3000',
-    ],
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    origin: true,
     credentials: true,
   });
 
   app.setGlobalPrefix('api');
 
+  // Render asigna su propio puerto en process.env.PORT
   const port = process.env.PORT || 3000;
   await app.listen(port, '0.0.0.0');
 }
