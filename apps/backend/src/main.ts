@@ -4,11 +4,16 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Permite cualquier origen, método y cabecera
+  // 🔴 ARRAY EXPLÍCITO DE ORIGENES PERMITIDOS
   app.enableCors({
-    origin: '*',
-    methods: '*',
-    allowedHeaders: '*',
+    origin: [
+      'https://proyecto-familia-five.vercel.app', // Tu frontend en producción
+      'http://localhost:5173',                    // Tu frontend local
+      'http://localhost:3000',
+    ],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    credentials: true,
   });
 
   app.setGlobalPrefix('api');
