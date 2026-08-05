@@ -1,0 +1,12 @@
+services:
+  - type: web_service
+    name: centro-familiar-backend
+    env: node
+    plan: free
+    region: oregon
+    buildCommand: pnpm install && pnpm --dir apps/backend build
+    startCommand: pnpm --dir apps/backend run start:prod
+    healthCheckPath: /api
+    envVars:
+      - key: NODE_ENV
+        value: production
