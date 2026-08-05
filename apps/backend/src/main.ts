@@ -5,14 +5,17 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const allowedOrigins = [
-    process.env.FRONTEND_URL || 'https://proyecto-familia-five.vercel.app',
+    process.env.FRONTEND_URL,
     'http://localhost:5173',
   ].filter(Boolean);
+  const vercelOriginRegex = /^(https:\/\/)?([a-z0-9-]+\.)*vercel\.app$/i;
 
   app.enableCors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
+      if (allowedOrigins.includes(origin) || vercelOriginRegex.test(origin)) {
+        return callback(null, true);
+      }
       callback(new Error(`Origin ${origin} not allowed by CORS`), false);
     },
     credentials: true,
