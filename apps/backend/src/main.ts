@@ -6,7 +6,6 @@ async function bootstrap() {
 
   const allowedOrigins = [
     process.env.FRONTEND_URL,
-    'http://localhost:5173',
   ].filter(Boolean);
   const vercelOriginRegex = /^(https:\/\/)?([a-z0-9-]+\.)*vercel\.app$/i;
 
