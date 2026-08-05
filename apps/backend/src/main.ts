@@ -6,9 +6,15 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: 'http://localhost:5173', // La URL exacta de tu frontend
-    credentials: true, // Importante si en el futuro usamos cookies
+    origin: [
+      'http://localhost:5173',                     // Tu entorno local
+      'https://proyecto-familia-five.vercel.app', // Tu frontend en Vercel
+      process.env.FRONTEND_URL,                    // Por si añades la variable en Render
+    ].filter(Boolean) as string[],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
   });
+
 
   app.setGlobalPrefix('api'); 
   
