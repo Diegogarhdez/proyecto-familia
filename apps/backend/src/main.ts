@@ -4,9 +4,9 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // 1. CORS flexible para responder a Vercel o localhost
+  // 🔴 CORS AUTOMÁTICO Y DINÁMICO
   app.enableCors({
-    origin: true, // Refleja automáticamente el origen de la petición
+    origin: true, // 👈 Esto refleja automáticamente la URL de Vercel (o localhost)
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type,Accept,Authorization',
@@ -14,12 +14,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
-  const port = process.env.PORT || 3000;
-
-  // 2. ¡CLAVE!: '0.0.0.0' le dice a NestJS que acepte conexiones externas en Render
-  await app.listen(port, '0.0.0.0');
-  
-  console.log(`🚀 Servidor listo y escuchando en el puerto ${port}`);
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
 
