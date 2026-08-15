@@ -37,6 +37,27 @@ const features = [
   },
 ];
 
+const recipes = [
+  {
+    id: 'r1',
+    title: 'Tortilla de patatas',
+    description: 'Clásica tortilla española con cebolla opcional.',
+    time: '30 min',
+  },
+  {
+    id: 'r2',
+    title: 'Ensalada mediterránea',
+    description: 'Fresca, rápida y perfecta para acompañar cualquier plato.',
+    time: '10 min',
+  },
+  {
+    id: 'r3',
+    title: 'Pollo al horno con limón',
+    description: 'Receta sencilla y jugosa para toda la familia.',
+    time: '1 h',
+  },
+];
+
 type Profile = {
   id: string;
   name: string;
@@ -104,6 +125,12 @@ export const Dashboard = () => {
   const handleLogout = () => {
     logout();
     navigate('/login', { replace: true });
+  };
+
+  const [openRecipe, setOpenRecipe] = useState<string | null>(null);
+
+  const toggleRecipe = (id: string) => {
+    setOpenRecipe((prev) => (prev === id ? null : id));
   };
 
   return (
@@ -209,6 +236,50 @@ export const Dashboard = () => {
                   <span className="mt-5 inline-flex w-fit items-center rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-500">
                     Próximamente
                   </span>
+                )}
+              </article>
+            ))}
+          </div>
+        </section>
+        <section className="rounded-[32px] border border-white/70 bg-white/85 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] sm:p-8">
+          <div className="mb-6">
+            <span className="inline-flex w-fit rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-amber-800">
+              Recetas de cocina
+            </span>
+            <h3 className="mt-4 text-2xl font-semibold tracking-tight text-slate-900">Ideas para cocinar en familia</h3>
+            <p className="mt-2 text-sm text-slate-600">Recetas sencillas y rápidas para las comidas diarias.</p>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {recipes.map((r) => (
+              <article key={r.id} className="flex flex-col justify-between rounded-[20px] border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-4">
+                <div>
+                  <h4 className="text-lg font-semibold text-slate-900">{r.title}</h4>
+                  <p className="mt-2 text-sm text-slate-600">{r.description}</p>
+                </div>
+
+                <div className="mt-4 flex items-center justify-between">
+                  <span className="text-xs text-slate-500">{r.time}</span>
+                  <button
+                    type="button"
+                    onClick={() => toggleRecipe(r.id)}
+                    className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100"
+                  >
+                    {openRecipe === r.id ? 'Ocultar' : 'Ver receta'}
+                  </button>
+                </div>
+
+                {openRecipe === r.id && (
+                  <div className="mt-4 rounded-md bg-slate-50 p-3 text-sm text-slate-700">
+                    <p className="font-semibold">Ingredientes (ejemplo):</p>
+                    <ul className="ml-4 list-disc">
+                      <li>Ingrediente 1</li>
+                      <li>Ingrediente 2</li>
+                      <li>Ingrediente 3</li>
+                    </ul>
+                    <p className="mt-2 font-semibold">Preparación (resumen):</p>
+                    <p className="mt-1 text-sm">Mezclar, cocinar y disfrutar. Pasos detallados próximamente.</p>
+                  </div>
                 )}
               </article>
             ))}
