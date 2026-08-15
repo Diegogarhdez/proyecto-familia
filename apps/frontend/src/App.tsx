@@ -6,11 +6,13 @@ import { Register } from './pages/Register';
 import { JoinFamily } from './pages/JoinFamily';
 import { Dashboard } from './pages/Dashboard';
 import { ShoppingList } from './pages/ShoppingList';
+import ScrollToTop from './components/ScrollToTop';
 
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           {/* Rutas Públicas */}
           <Route path="/" element={<Navigate to="/login" replace />} />
