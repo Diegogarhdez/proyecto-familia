@@ -34,6 +34,7 @@ const features = [
     description: 'Un vistazo rápido a lo que queda por hacer hoy o durante la semana.',
     accent: 'bg-yellow-400',
     kind: 'tasks' as const,
+    href: '/tasks',
   },
   {
     title: 'Recetas de cocina',

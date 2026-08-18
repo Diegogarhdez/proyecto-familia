@@ -6,9 +6,10 @@ import { FamilyModule } from './family/family.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { ShoppingModule } from './shopping/shopping.module';
+import { TaskModule } from './tasks/task.module';
 
 @Module({
-  imports: [PrismaModule, FamilyModule, AuthModule, ConfigModule.forRoot({ isGlobal: true }), ShoppingModule],
+  imports: [PrismaModule, FamilyModule, AuthModule, ConfigModule.forRoot({ isGlobal: true }), ShoppingModule, TaskModule],
   controllers: [AppController],
   providers: [AppService],
 })

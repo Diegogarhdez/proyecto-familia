@@ -6,6 +6,7 @@ import { Register } from './pages/Register';
 import { JoinFamily } from './pages/JoinFamily';
 import { Dashboard } from './pages/Dashboard';
 import { ShoppingList } from './pages/ShoppingList';
+import { TasksList } from './pages/TasksList';
 import ScrollToTop from './components/ScrollToTop';
 
 export default function App() {
@@ -34,6 +35,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <ShoppingList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tasks"
+            element={
+              <ProtectedRoute>
+                <TasksList />
               </ProtectedRoute>
             }
           />

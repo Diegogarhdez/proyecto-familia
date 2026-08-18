@@ -15,13 +15,15 @@ enum Role {
 
 // --- MODELOS ---
 model Family {
-  id        String   @id @default(uuid())
-  name      String
+  id         String   @id @default(uuid())
+  name       String
   inviteCode String   @unique @default(uuid())
-  createdAt DateTime @default(now())
+  createdAt  DateTime @default(now())
 
-  users     User[]
+  users         User[]
   shoppingItems ShoppingItem[]
+  tasks         Task[]
+
   @@map("families")
 }
 
@@ -33,20 +35,32 @@ model User {
   role         Role     @default(MEMBER)
   createdAt    DateTime @default(now())
 
-  familyId     String
-  family       Family   @relation(fields: [familyId], references: [id])
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id])
 
   @@map("users")
 }
 
 model ShoppingItem {
   id        String   @id @default(uuid())
-  name      String   // Ej: "Leche", "Huevos"
+  name      String // Ej: "Leche", "Huevos"
   quantity  Int      @default(1)
   isBought  Boolean  @default(false) // Por defecto no está comprado
   createdAt DateTime @default(now()) // Para ordenarlos por fecha
 
   // Relación: Este producto pertenece a una Familia
-  familyId  String
-  family    Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+}
+
+model Task {
+  id        String   @id @default(uuid())
+  name      String
+  isDone    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  @@map("tasks")
 }
