@@ -13,6 +13,15 @@ enum Role {
   MEMBER
 }
 
+enum RecipeUnit {
+  GRAMS
+  KILOGRAMS
+  MILLILITERS
+  LITERS
+  TABLESPOONS
+  OUNCES
+}
+
 // --- MODELOS ---
 model Family {
   id         String   @id @default(uuid())
@@ -24,6 +33,7 @@ model Family {
   shoppingItems ShoppingItem[]
   tasks         Task[]
   ideasPlans    IdeaPlan[]
+  recipes       Recipe[]
 
   @@map("families")
 }
@@ -76,4 +86,42 @@ model IdeaPlan {
   family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
 
   @@map("ideas_plans")
+}
+
+model Recipe {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  familyId    String
+  family      Family             @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  ingredients RecipeIngredient[]
+  steps       RecipeStep[]
+
+  @@map("recipes")
+}
+
+model RecipeIngredient {
+  id        String     @id @default(uuid())
+  name      String
+  quantity  Float
+  unit      RecipeUnit
+  createdAt DateTime   @default(now())
+
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@map("recipe_ingredients")
+}
+
+model RecipeStep {
+  id          String   @id @default(uuid())
+  description String
+  position    Int
+
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@unique([recipeId, position])
+  @@map("recipe_steps")
 }

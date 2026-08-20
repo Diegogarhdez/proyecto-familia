@@ -8,9 +8,10 @@ import { ConfigModule } from '@nestjs/config';
 import { ShoppingModule } from './shopping/shopping.module';
 import { TaskModule } from './tasks/task.module';
 import { IdeaPlanModule } from './ideas-plans/idea-plan.module';
+import { RecipeModule } from './recipes/recipe.module';
 
 @Module({
-  imports: [PrismaModule, FamilyModule, AuthModule, ConfigModule.forRoot({ isGlobal: true }), ShoppingModule, TaskModule, IdeaPlanModule],
+  imports: [PrismaModule, FamilyModule, AuthModule, ConfigModule.forRoot({ isGlobal: true }), ShoppingModule, TaskModule, IdeaPlanModule, RecipeModule],
   controllers: [AppController],
   providers: [AppService],
 })
