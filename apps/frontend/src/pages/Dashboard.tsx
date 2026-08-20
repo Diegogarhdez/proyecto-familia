@@ -28,6 +28,7 @@ const features = [
     description: 'Una zona para proponer salidas, actividades y planes del fin de semana.',
     accent: 'bg-orange-400',
     kind: 'feature' as const,
+    href: '/ideas-plans',
   },
   {
     title: 'Tareas pendientes',

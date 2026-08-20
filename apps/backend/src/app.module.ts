@@ -7,9 +7,10 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { ShoppingModule } from './shopping/shopping.module';
 import { TaskModule } from './tasks/task.module';
+import { IdeaPlanModule } from './ideas-plans/idea-plan.module';
 
 @Module({
-  imports: [PrismaModule, FamilyModule, AuthModule, ConfigModule.forRoot({ isGlobal: true }), ShoppingModule, TaskModule],
+  imports: [PrismaModule, FamilyModule, AuthModule, ConfigModule.forRoot({ isGlobal: true }), ShoppingModule, TaskModule, IdeaPlanModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -7,6 +7,7 @@ import { JoinFamily } from './pages/JoinFamily';
 import { Dashboard } from './pages/Dashboard';
 import { ShoppingList } from './pages/ShoppingList';
 import { TasksList } from './pages/TasksList';
+import { IdeasPlansList } from './pages/IdeasPlansList';
 import ScrollToTop from './components/ScrollToTop';
 
 export default function App() {
@@ -43,6 +44,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <TasksList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ideas-plans"
+            element={
+              <ProtectedRoute>
+                <IdeasPlansList />
               </ProtectedRoute>
             }
           />

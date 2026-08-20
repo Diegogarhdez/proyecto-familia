@@ -23,6 +23,7 @@ model Family {
   users         User[]
   shoppingItems ShoppingItem[]
   tasks         Task[]
+  ideasPlans    IdeaPlan[]
 
   @@map("families")
 }
@@ -63,4 +64,16 @@ model Task {
   family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
 
   @@map("tasks")
+}
+
+model IdeaPlan {
+  id        String   @id @default(uuid())
+  name      String
+  isDone    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  @@map("ideas_plans")
 }
