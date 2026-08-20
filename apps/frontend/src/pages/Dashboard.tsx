@@ -44,6 +44,12 @@ const features = [
     kind: 'feature' as const,
     href: '/recipes',
   },
+  {
+    title: 'Control de gastos',
+    description: 'Llevad un registro claro de los gastos y del presupuesto familiar.',
+    accent: 'bg-teal-400',
+    kind: 'feature' as const,
+  },
 ];
 
 type Profile = {
