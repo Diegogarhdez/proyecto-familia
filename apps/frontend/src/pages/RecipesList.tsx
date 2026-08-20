@@ -41,9 +41,9 @@ type Profile = {
 
 const unitLabels: Record<RecipeUnit, string> = {
   GRAMS: 'gramos',
-  KILOGRAMS: 'kilos',
-  MILLILITERS: 'ml',
-  LITERS: 'L',
+  KILOGRAMS: 'kilogramos',
+  MILLILITERS: 'mililitros',
+  LITERS: 'litros',
   TABLESPOONS: 'cucharadas',
   OUNCES: 'onzas',
 };
