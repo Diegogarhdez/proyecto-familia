@@ -8,12 +8,14 @@ const features = [
     title: 'Calendario familiar',
     description: 'Eventos, reuniones y recordatorios compartidos en un solo lugar.',
     accent: 'bg-amber-400',
+    icon: '📅',
     kind: 'feature' as const,
   },
   {
     title: 'Lista de la compra',
     description: 'Añade lo que falta en casa y tenlo a mano desde cualquier dispositivo.',
     accent: 'bg-emerald-400',
+    icon: '🛒',
     kind: 'feature' as const,
     href: '/shopping',
   },
@@ -21,12 +23,14 @@ const features = [
     title: 'Rutinas semanales',
     description: 'Organiza tareas por días para que todo fluya mejor en familia.',
     accent: 'bg-sky-400',
+    icon: '🎯',
     kind: 'feature' as const,
   },
   {
     title: 'Ideas y planes',
     description: 'Una zona para proponer salidas, actividades y planes del fin de semana.',
     accent: 'bg-orange-400',
+    icon: '💡',
     kind: 'feature' as const,
     href: '/ideas-plans',
   },
@@ -34,6 +38,7 @@ const features = [
     title: 'Tareas pendientes',
     description: 'Un vistazo rápido a lo que queda por hacer hoy o durante la semana.',
     accent: 'bg-yellow-400',
+    icon: '📓',
     kind: 'tasks' as const,
     href: '/tasks',
   },
@@ -41,6 +46,7 @@ const features = [
     title: 'Recetas de cocina',
     description: 'Recetas rápidas y familiares para las comidas de todos los días.',
     accent: 'bg-pink-400',
+    icon: '🍽️',
     kind: 'feature' as const,
     href: '/recipes',
   },
@@ -48,6 +54,7 @@ const features = [
     title: 'Control de gastos',
     description: 'Llevad un registro claro de los gastos y del presupuesto familiar.',
     accent: 'bg-teal-400',
+    icon: '📈',
     kind: 'feature' as const,
   },
 ];
@@ -194,7 +201,9 @@ export const Dashboard = () => {
                 className="flex min-h-[210px] flex-col justify-between rounded-[28px] border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-5 shadow-sm"
               >
                 <div>
-                  <div className={`h-12 w-12 rounded-2xl ${feature.accent}`} />
+                  <div className={`grid h-12 w-12 place-items-center rounded-2xl text-2xl ${feature.accent}`} aria-hidden="true">
+                    {feature.icon}
+                  </div>
                   <h3 className="mt-4 text-lg font-semibold text-slate-900">{feature.title}</h3>
                   {feature.kind === 'tasks' ? (
                     <div className="mt-4 space-y-3">
