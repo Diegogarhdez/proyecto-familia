@@ -224,11 +224,7 @@ export const Dashboard = () => {
                   )}
                 </div>
 
-                {feature.title === 'Recetas de cocina' ? (
-                  <span className="mt-5 inline-flex w-fit items-center rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-500">
-                    Próximamente
-                  </span>
-                ) : feature.href ? (
+                {feature.href ? (
                   <Link
                     to={feature.href}
                     className="mt-5 inline-flex w-fit items-center rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100"
