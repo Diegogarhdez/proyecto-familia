@@ -20,6 +20,7 @@ enum RecipeUnit {
   LITERS
   TABLESPOONS
   OUNCES
+  UNITS
 }
 
 // --- MODELOS ---

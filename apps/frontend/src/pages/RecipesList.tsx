@@ -4,7 +4,7 @@ import { io } from 'socket.io-client';
 import { apiClient } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
-type RecipeUnit = 'GRAMS' | 'KILOGRAMS' | 'MILLILITERS' | 'LITERS' | 'TABLESPOONS' | 'OUNCES';
+type RecipeUnit = 'GRAMS' | 'KILOGRAMS' | 'MILLILITERS' | 'LITERS' | 'TABLESPOONS' | 'OUNCES' | 'UNITS';
 
 type IngredientForm = {
   name: string;
@@ -46,6 +46,7 @@ const unitLabels: Record<RecipeUnit, string> = {
   LITERS: 'litros',
   TABLESPOONS: 'cucharadas',
   OUNCES: 'onzas',
+  UNITS: 'unidades',
 };
 
 const emptyIngredient = (): IngredientForm => ({

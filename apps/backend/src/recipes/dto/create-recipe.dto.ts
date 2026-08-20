@@ -17,6 +17,7 @@ export enum RecipeUnit {
   LITERS = 'LITERS',
   TABLESPOONS = 'TABLESPOONS',
   OUNCES = 'OUNCES',
+  UNITS = 'UNITS',
 }
 
 export class CreateRecipeIngredientDto {
