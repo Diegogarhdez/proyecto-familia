@@ -56,6 +56,7 @@ const features = [
     accent: 'bg-teal-400',
     icon: '📈',
     kind: 'feature' as const,
+    href: '/expenses',
   },
 ];
 

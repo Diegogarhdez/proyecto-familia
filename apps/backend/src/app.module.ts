@@ -9,9 +9,10 @@ import { ShoppingModule } from './shopping/shopping.module';
 import { TaskModule } from './tasks/task.module';
 import { IdeaPlanModule } from './ideas-plans/idea-plan.module';
 import { RecipeModule } from './recipes/recipe.module';
+import { ExpenseModule } from './expenses/expense.module';
 
 @Module({
-  imports: [PrismaModule, FamilyModule, AuthModule, ConfigModule.forRoot({ isGlobal: true }), ShoppingModule, TaskModule, IdeaPlanModule, RecipeModule],
+  imports: [PrismaModule, FamilyModule, AuthModule, ConfigModule.forRoot({ isGlobal: true }), ShoppingModule, TaskModule, IdeaPlanModule, RecipeModule, ExpenseModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -9,6 +9,7 @@ import { ShoppingList } from './pages/ShoppingList';
 import { TasksList } from './pages/TasksList';
 import { IdeasPlansList } from './pages/IdeasPlansList';
 import { RecipesList } from './pages/RecipesList';
+import { ExpensesDashboard } from './pages/ExpensesDashboard';
 import ScrollToTop from './components/ScrollToTop';
 
 export default function App() {
@@ -61,6 +62,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <RecipesList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/expenses"
+            element={
+              <ProtectedRoute>
+                <ExpensesDashboard />
               </ProtectedRoute>
             }
           />
