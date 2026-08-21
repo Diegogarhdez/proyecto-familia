@@ -10,6 +10,7 @@ import { TasksList } from './pages/TasksList';
 import { IdeasPlansList } from './pages/IdeasPlansList';
 import { RecipesList } from './pages/RecipesList';
 import { ExpensesDashboard } from './pages/ExpensesDashboard';
+import { VerifyEmail } from './pages/VerifyEmail';
 import ScrollToTop from './components/ScrollToTop';
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/join" element={<JoinFamily />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
 
           {/* 👇 2. Envolver la ruta destino con <ProtectedRoute> */}
           <Route

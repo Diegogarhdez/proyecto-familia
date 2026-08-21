@@ -51,7 +51,7 @@ export const Register = () => {
     setIsLoading(true);
 
     try {
-      const response = await apiClient.post('/auth/register', {
+      await apiClient.post('/auth/register', {
         name,
         email,
         password,
@@ -59,15 +59,8 @@ export const Register = () => {
         familyName,
       });
 
-      const family = response.data?.family;
-      if (family) {
-        localStorage.setItem('displayName', response.data?.name ?? name);
-        localStorage.setItem('familyName', family.name ?? familyName);
-        localStorage.setItem('familyCode', family.inviteCode ?? '');
-      }
-
-      alert('Registro exitoso. Ahora puedes iniciar sesión.');
-      navigate('/login', { replace: true });
+      localStorage.setItem('pendingVerificationEmail', email.trim().toLowerCase());
+      navigate('/verify-email', { replace: true, state: { email: email.trim().toLowerCase() } });
     } catch (err: any) {
       if (err.response?.status === 409) {
         setError('Este correo ya está registrado.');

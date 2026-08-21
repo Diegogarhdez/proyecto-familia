@@ -5,6 +5,8 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JoinDto } from './dto/join.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { VerifyEmailDto } from './dto/verify-email.dto';
+import { ResendVerificationDto } from './dto/resend-verification.dto';
 
 type JwtUserPayload = {
   sub: string;
@@ -29,6 +31,16 @@ export class AuthController {
   @HttpCode(HttpStatus.OK) 
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
+  }
+
+  @Post('verify-email')
+  async verifyEmail(@Body() verifyEmailDto: VerifyEmailDto) {
+    return this.authService.verifyEmail(verifyEmailDto);
+  }
+
+  @Post('resend-verification')
+  async resendVerification(@Body() body: ResendVerificationDto) {
+    return this.authService.resendVerification(body.email);
   }
 
   @UseGuards(JwtAuthGuard) 
