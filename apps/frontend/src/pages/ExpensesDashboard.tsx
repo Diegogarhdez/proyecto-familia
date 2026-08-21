@@ -40,16 +40,18 @@ export const ExpensesDashboard = () => {
   const [categoryName, setCategoryName] = useState('');
   const [categoryEmoji, setCategoryEmoji] = useState('📦');
   const [categoryLimit, setCategoryLimit] = useState('');
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [familyId, setFamilyId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let alive = true;
-    Promise.all([apiClient.get<{ family: { id: string } }>('/auth/me'), apiClient.get<Dashboard>(`/expenses/dashboard?month=${month}`)])
+    Promise.all([apiClient.get<{ id: string; family: { id: string } }>('/auth/me'), apiClient.get<Dashboard>(`/expenses/dashboard?month=${month}`)])
       .then(([profile, response]) => {
         if (!alive) return;
         setFamilyId(profile.data.family.id);
+        setCurrentUserId(profile.data.id);
         setDashboard(response.data);
         setIncome(String(response.data.myIncome || ''));
       })
@@ -147,8 +149,8 @@ export const ExpensesDashboard = () => {
             </div>
 
             <div className="mt-6 grid gap-5 lg:grid-cols-2">
-              <form onSubmit={submitIncome} className="rounded-[24px] border border-slate-200 bg-slate-50 p-5"><h3 className="text-lg font-semibold text-slate-900">Mi aportación mensual</h3><p className="mt-1 text-sm text-slate-500">Registra lo que aportas tú en el mes seleccionado.</p><div className="mt-4 flex flex-wrap gap-2"><input type="number" min="0" step="0.01" value={income} onChange={(event) => setIncome(event.target.value)} placeholder="0,00" className="min-h-11 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-slate-900" /><button className="rounded-2xl bg-teal-500 px-4 text-sm font-semibold text-white">Guardar</button><button type="button" onClick={() => void removeIncome()} disabled={!income} className="rounded-2xl bg-rose-50 px-4 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50">Eliminar</button></div></form>
-              <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5"><h3 className="text-lg font-semibold text-slate-900">Aportaciones de la familia</h3><div className="mt-3 space-y-2">{dashboard.contributions.length === 0 ? <p className="text-sm text-slate-500">Todavía no hay aportaciones.</p> : dashboard.contributions.map((contribution) => <div key={contribution.userId} className="flex justify-between text-sm"><span className="text-slate-600">{contribution.user.name}</span><strong className="text-slate-900">{money.format(contribution.amount)}</strong></div>)}</div></div>
+              <form onSubmit={submitIncome} className="rounded-[24px] border border-slate-200 bg-slate-50 p-5"><h3 className="text-lg font-semibold text-slate-900">Mi aportación mensual</h3><p className="mt-1 text-sm text-slate-500">Registra lo que aportas tú en el mes seleccionado.</p><div className="mt-4 flex flex-wrap gap-2"><input type="number" min="0" step="0.01" value={income} onChange={(event) => setIncome(event.target.value)} placeholder="0,00" className="min-h-11 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-slate-900" /><button type="submit" className="rounded-2xl bg-teal-500 px-4 text-sm font-semibold text-white">Guardar</button></div></form>
+              <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5"><h3 className="text-lg font-semibold text-slate-900">Aportaciones de la familia</h3><div className="mt-3 space-y-2">{dashboard.contributions.length === 0 ? <p className="text-sm text-slate-500">Todavía no hay aportaciones.</p> : dashboard.contributions.map((contribution) => <div key={contribution.userId} className="flex items-center justify-between gap-3 text-sm"><span className="text-slate-600">{contribution.user.name}</span><div className="flex items-center gap-3"><strong className="text-slate-900">{money.format(contribution.amount)}</strong>{contribution.userId === currentUserId && <button type="button" onClick={() => void removeIncome()} className="rounded-full bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-100">Eliminar</button>}</div></div>)}</div></div>
             </div>
 
             <div className="mt-6"><h3 className="text-xl font-semibold text-slate-900">Presupuesto por categoría</h3><div className="mt-3 grid gap-4 md:grid-cols-2">{dashboard.categories.map((category) => <div key={category.id} className="rounded-[24px] border border-slate-200 bg-white p-4"><div className="flex justify-between gap-3"><span className="font-semibold text-slate-900">{category.emoji} {category.name}</span><span className="text-sm text-slate-500">{money.format(category.spent)} / {money.format(category.monthlyLimit)}</span></div><div className="mt-3 h-3 overflow-hidden rounded-full bg-slate-100"><div className={`h-full rounded-full ${category.percentage >= 100 ? 'bg-rose-500' : category.percentage > 80 ? 'bg-orange-400' : 'bg-teal-500'}`} style={{ width: `${Math.min(category.percentage, 100)}%` }} /></div><p className="mt-2 text-xs text-slate-500">{category.percentage}% del límite</p></div>)}</div></div>
