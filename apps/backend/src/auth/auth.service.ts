@@ -81,7 +81,8 @@ export class AuthService {
       const { passwordHash: _, verificationCodeHash: __, verificationCodeExpiresAt: ___, ...userWithoutPassword } = newUser;
       try {
         await this.sendVerificationEmail(email, verificationCode);
-      } catch {
+      } catch (error) {
+        console.error('Error enviando verificación con Resend:', error);
         await this.prisma.user.delete({ where: { id: newUser.id } });
         await this.prisma.family.delete({ where: { id: newUser.family.id } });
         throw new ServiceUnavailableException('No se pudo enviar el código de verificación');
@@ -287,7 +288,8 @@ export class AuthService {
     });
 
     if (!response.ok) {
-      throw new Error('Resend no pudo enviar el correo de verificación');
+      const responseBody = await response.text();
+      throw new Error(`Resend respondió ${response.status}: ${responseBody}`);
     }
   }
 

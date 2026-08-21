@@ -64,6 +64,8 @@ export const Register = () => {
     } catch (err: any) {
       if (err.response?.status === 409) {
         setError('Este correo ya está registrado.');
+      } else if (err.response?.status === 503) {
+        setError('No pudimos enviar el código de verificación. Comprueba la configuración del correo e inténtalo de nuevo.');
       } else if (err.response?.status === 400) {
         setError(getRegisterErrorMessage(err));
       } else {
