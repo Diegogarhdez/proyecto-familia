@@ -14,6 +14,7 @@ import { JoinDto } from './dto/join.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import * as bcrypt from 'bcryptjs';
 import { createHash, randomInt } from 'crypto';
+import nodemailer from 'nodemailer';
 
 @Injectable()
 export class AuthService {
@@ -82,7 +83,7 @@ export class AuthService {
       try {
         await this.sendVerificationEmail(email, verificationCode);
       } catch (error) {
-        console.error('Error enviando verificación con Resend:', error);
+        console.error('Error enviando verificación por SMTP:', error);
         await this.prisma.user.delete({ where: { id: newUser.id } });
         await this.prisma.family.delete({ where: { id: newUser.family.id } });
         throw new ServiceUnavailableException('No se pudo enviar el código de verificación');
@@ -235,7 +236,7 @@ export class AuthService {
     return { message: 'Correo verificado correctamente' };
   }
 
-  async resendVerification(rawEmail: string) {
+  async sendVerificationCode(rawEmail: string) {
     const email = this.normalizeEmail(rawEmail);
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user || user.emailVerified) {
@@ -267,30 +268,28 @@ export class AuthService {
   }
 
   private async sendVerificationEmail(email: string, code: string) {
-    const apiKey = this.cleanEnvironmentValue(process.env.RESEND_API_KEY);
-    const from = this.cleanEnvironmentValue(process.env.RESEND_FROM_EMAIL);
-    if (!apiKey || !from) {
-      throw new Error('Faltan RESEND_API_KEY o RESEND_FROM_EMAIL');
+    const host = this.cleanEnvironmentValue(process.env.SMTP_HOST);
+    const port = Number(this.cleanEnvironmentValue(process.env.SMTP_PORT) ?? 587);
+    const user = this.cleanEnvironmentValue(process.env.SMTP_USER);
+    const password = this.cleanEnvironmentValue(process.env.SMTP_PASS);
+    const from = this.cleanEnvironmentValue(process.env.SMTP_FROM);
+    if (!host || !user || !password || !from || !Number.isInteger(port)) {
+      throw new Error('Faltan SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS o SMTP_FROM');
     }
 
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from,
-        to: [email],
-        subject: 'Tu código de verificación de Kinly',
-        html: `<p>Tu código de verificación es:</p><p style="font-size: 28px; font-weight: bold; letter-spacing: 8px">${code}</p><p>Caduca en 10 minutos.</p>`,
-      }),
+    const transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure: port === 465,
+      auth: { user, pass: password },
     });
 
-    if (!response.ok) {
-      const responseBody = await response.text();
-      throw new Error(`Resend respondió ${response.status}: ${responseBody}`);
-    }
+    await transporter.sendMail({
+      from,
+      to: email,
+      subject: 'Tu código de verificación de Kinly',
+      html: `<p>Tu código de verificación es:</p><p style="font-size: 28px; font-weight: bold; letter-spacing: 8px">${code}</p><p>Caduca en 10 minutos.</p>`,
+    });
   }
 
   private cleanEnvironmentValue(value?: string) {

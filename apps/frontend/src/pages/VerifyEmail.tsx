@@ -39,7 +39,7 @@ export const VerifyEmail = () => {
     setMessage(null);
     setIsResending(true);
     try {
-      await apiClient.post('/auth/resend-verification', { email });
+      await apiClient.post('/auth/verification-code', { email });
       setMessage('Te hemos enviado un código nuevo.');
     } catch (err: any) {
       const responseMessage = err.response?.data?.message;
