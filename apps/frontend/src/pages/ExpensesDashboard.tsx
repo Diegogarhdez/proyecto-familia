@@ -86,7 +86,7 @@ export const ExpensesDashboard = () => {
   const removeIncome = async () => {
     try {
       await apiClient.delete(`/expenses/income/${month}`);
-      await apiClient.delete(`/expenses/income/${month}`);
+      setError(null);
     } catch {
       setError('No se pudo eliminar tu aportación.');
     }
