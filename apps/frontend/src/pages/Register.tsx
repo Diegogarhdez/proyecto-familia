@@ -51,21 +51,29 @@ export const Register = () => {
     setIsLoading(true);
 
     try {
-      await apiClient.post('/auth/register', {
-        name,
-        email,
-        password,
-        confirmPassword,
-        familyName,
-      });
+      await apiClient.post(
+        '/auth/register',
+        {
+          name,
+          email,
+          password,
+          confirmPassword,
+          familyName,
+        },
+        { timeout: 20000 },
+      );
 
       localStorage.setItem('pendingVerificationEmail', email.trim().toLowerCase());
       navigate('/verify-email', { replace: true, state: { email: email.trim().toLowerCase() } });
     } catch (err: any) {
       if (err.response?.status === 409) {
-        setError('Este correo ya está registrado.');
+        const responseMessage = err.response?.data?.message;
+        const message = Array.isArray(responseMessage) ? responseMessage[0] : responseMessage;
+        setError(message ?? 'Este correo ya está registrado.');
       } else if (err.response?.status === 503) {
         setError('No pudimos enviar el código de verificación. Comprueba la configuración del correo e inténtalo de nuevo.');
+      } else if (err.code === 'ECONNABORTED' || err.code === 'ETIMEDOUT') {
+        setError('El registro está tardando demasiado. Comprueba tu conexión e inténtalo de nuevo.');
       } else if (err.response?.status === 400) {
         setError(getRegisterErrorMessage(err));
       } else {

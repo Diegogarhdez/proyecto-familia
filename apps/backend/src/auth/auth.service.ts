@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
+  OnModuleInit,
   ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -17,11 +18,20 @@ import { createHash, randomInt } from 'crypto';
 import nodemailer from 'nodemailer';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService // 👈 Inyectarlo aquí
   ) {}
+
+  async onModuleInit() {
+    try {
+      await this.createSmtpTransport().verify();
+      console.log('Conexión con el servidor de correo SMTP (Brevo) lista');
+    } catch (error) {
+      console.error('Error de conexión con el servidor SMTP de Brevo:', error);
+    }
+  }
 
   private generateInviteCode(length = 6) {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -277,18 +287,34 @@ export class AuthService {
       throw new Error('Faltan SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS o SMTP_FROM');
     }
 
-    const transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: port === 465,
-      auth: { user, pass: password },
-    });
+    const transporter = this.createSmtpTransport();
 
     await transporter.sendMail({
       from,
       to: email,
       subject: 'Tu código de verificación de Kinly',
       html: `<p>Tu código de verificación es:</p><p style="font-size: 28px; font-weight: bold; letter-spacing: 8px">${code}</p><p>Caduca en 10 minutos.</p>`,
+    });
+  }
+
+  private createSmtpTransport() {
+    const host = this.cleanEnvironmentValue(process.env.SMTP_HOST);
+    const port = Number(this.cleanEnvironmentValue(process.env.SMTP_PORT) ?? 465);
+    const user = this.cleanEnvironmentValue(process.env.SMTP_USER);
+    const password = this.cleanEnvironmentValue(process.env.SMTP_PASS);
+
+    if (!host || !user || !password || !Number.isInteger(port)) {
+      throw new Error('Faltan SMTP_HOST, SMTP_PORT, SMTP_USER o SMTP_PASS');
+    }
+
+    return nodemailer.createTransport({
+      host,
+      port,
+      secure: port === 465,
+      auth: { user, pass: password },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
     });
   }
 
