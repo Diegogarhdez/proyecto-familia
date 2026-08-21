@@ -22,6 +22,12 @@ export class ExpenseController {
     return this.expenseService.upsertIncome(user.sub, dto);
   }
 
+  @Delete('income')
+  removeIncome(@Request() req, @Query() query: MonthDto) {
+    const user = req.user as JwtUserPayload;
+    return this.expenseService.removeIncome(user.sub, query.month);
+  }
+
   @Post('categories')
   createCategory(@Request() req, @Body() dto: CreateExpenseCategoryDto) {
     const user = req.user as JwtUserPayload;

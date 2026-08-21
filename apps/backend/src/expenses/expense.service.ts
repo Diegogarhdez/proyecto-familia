@@ -79,6 +79,14 @@ export class ExpenseService {
     return this.broadcast(userId, dto.month);
   }
 
+  async removeIncome(userId: string, month: string) {
+    const user = await this.getUser(userId);
+    await this.prisma.monthlyIncome.deleteMany({
+      where: { userId, familyId: user.familyId, month },
+    });
+    return this.broadcast(userId, month);
+  }
+
   async createCategory(userId: string, dto: CreateExpenseCategoryDto) {
     const user = await this.getUser(userId);
     await this.prisma.expenseCategory.create({

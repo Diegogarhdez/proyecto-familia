@@ -78,6 +78,15 @@ export const ExpensesDashboard = () => {
     catch { setError('No se pudo guardar tu aportación.'); }
   };
 
+  const removeIncome = async () => {
+    try {
+      await apiClient.delete(`/expenses/income?month=${month}`);
+      setIncome('');
+    } catch {
+      setError('No se pudo eliminar tu aportación.');
+    }
+  };
+
   const submitCategory = async (event: FormEvent) => {
     event.preventDefault();
     if (!categoryName.trim()) return;
@@ -138,7 +147,7 @@ export const ExpensesDashboard = () => {
             </div>
 
             <div className="mt-6 grid gap-5 lg:grid-cols-2">
-              <form onSubmit={submitIncome} className="rounded-[24px] border border-slate-200 bg-slate-50 p-5"><h3 className="text-lg font-semibold text-slate-900">Mi aportación mensual</h3><p className="mt-1 text-sm text-slate-500">Registra lo que aportas tú en el mes seleccionado.</p><div className="mt-4 flex gap-2"><input type="number" min="0" step="0.01" value={income} onChange={(event) => setIncome(event.target.value)} placeholder="0,00" className="min-h-11 flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-slate-900" /><button className="rounded-2xl bg-teal-500 px-4 text-sm font-semibold text-white">Guardar</button></div></form>
+              <form onSubmit={submitIncome} className="rounded-[24px] border border-slate-200 bg-slate-50 p-5"><h3 className="text-lg font-semibold text-slate-900">Mi aportación mensual</h3><p className="mt-1 text-sm text-slate-500">Registra lo que aportas tú en el mes seleccionado.</p><div className="mt-4 flex flex-wrap gap-2"><input type="number" min="0" step="0.01" value={income} onChange={(event) => setIncome(event.target.value)} placeholder="0,00" className="min-h-11 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-slate-900" /><button className="rounded-2xl bg-teal-500 px-4 text-sm font-semibold text-white">Guardar</button><button type="button" onClick={() => void removeIncome()} disabled={!income} className="rounded-2xl bg-rose-50 px-4 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50">Eliminar</button></div></form>
               <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5"><h3 className="text-lg font-semibold text-slate-900">Aportaciones de la familia</h3><div className="mt-3 space-y-2">{dashboard.contributions.length === 0 ? <p className="text-sm text-slate-500">Todavía no hay aportaciones.</p> : dashboard.contributions.map((contribution) => <div key={contribution.userId} className="flex justify-between text-sm"><span className="text-slate-600">{contribution.user.name}</span><strong className="text-slate-900">{money.format(contribution.amount)}</strong></div>)}</div></div>
             </div>
 
