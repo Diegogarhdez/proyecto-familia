@@ -2,7 +2,6 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
-  OnModuleInit,
   ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -15,23 +14,13 @@ import { JoinDto } from './dto/join.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import * as bcrypt from 'bcryptjs';
 import { createHash, randomInt } from 'crypto';
-import nodemailer from 'nodemailer';
 
 @Injectable()
-export class AuthService implements OnModuleInit {
+export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService // 👈 Inyectarlo aquí
   ) {}
-
-  async onModuleInit() {
-    try {
-      await this.createSmtpTransport().verify();
-      console.log('Conexión con el servidor de correo SMTP (Brevo) lista');
-    } catch (error) {
-      console.error('Error de conexión con el servidor SMTP de Brevo:', error);
-    }
-  }
 
   private generateInviteCode(length = 6) {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -93,7 +82,7 @@ export class AuthService implements OnModuleInit {
       try {
         await this.sendVerificationEmail(email, verificationCode);
       } catch (error) {
-        console.error('Error enviando verificación por SMTP:', error);
+        console.error('Error enviando verificación con Brevo:', error);
         await this.prisma.user.delete({ where: { id: newUser.id } });
         await this.prisma.family.delete({ where: { id: newUser.family.id } });
         throw new ServiceUnavailableException('No se pudo enviar el código de verificación');
@@ -278,44 +267,30 @@ export class AuthService implements OnModuleInit {
   }
 
   private async sendVerificationEmail(email: string, code: string) {
-    const host = this.cleanEnvironmentValue(process.env.SMTP_HOST);
-    const port = Number(this.cleanEnvironmentValue(process.env.SMTP_PORT) ?? 587);
-    const user = this.cleanEnvironmentValue(process.env.SMTP_USER);
-    const password = this.cleanEnvironmentValue(process.env.SMTP_PASS);
-    const from = this.cleanEnvironmentValue(process.env.SMTP_FROM);
-    if (!host || !user || !password || !from || !Number.isInteger(port)) {
-      throw new Error('Faltan SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS o SMTP_FROM');
+    const apiKey = this.cleanEnvironmentValue(process.env.BREVO_API_KEY);
+    const from = this.cleanEnvironmentValue(process.env.BREVO_FROM_EMAIL);
+    if (!apiKey || !from) {
+      throw new Error('Faltan BREVO_API_KEY o BREVO_FROM_EMAIL');
     }
 
-    const transporter = this.createSmtpTransport();
-
-    await transporter.sendMail({
-      from,
-      to: email,
-      subject: 'Tu código de verificación de Kinly',
-      html: `<p>Tu código de verificación es:</p><p style="font-size: 28px; font-weight: bold; letter-spacing: 8px">${code}</p><p>Caduca en 10 minutos.</p>`,
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'api-key': apiKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        sender: { email: from, name: 'Kinly' },
+        to: [{ email }],
+        subject: 'Tu código de verificación de Kinly',
+        htmlContent: `<p>Tu código de verificación es:</p><p style="font-size: 28px; font-weight: bold; letter-spacing: 8px">${code}</p><p>Caduca en 10 minutos.</p>`,
+      }),
     });
-  }
 
-  private createSmtpTransport() {
-    const host = this.cleanEnvironmentValue(process.env.SMTP_HOST);
-    const port = Number(this.cleanEnvironmentValue(process.env.SMTP_PORT) ?? 465);
-    const user = this.cleanEnvironmentValue(process.env.SMTP_USER);
-    const password = this.cleanEnvironmentValue(process.env.SMTP_PASS);
-
-    if (!host || !user || !password || !Number.isInteger(port)) {
-      throw new Error('Faltan SMTP_HOST, SMTP_PORT, SMTP_USER o SMTP_PASS');
+    if (!response.ok) {
+      const responseBody = await response.text();
+      throw new Error(`Brevo respondió ${response.status}: ${responseBody}`);
     }
-
-    return nodemailer.createTransport({
-      host,
-      port,
-      secure: port === 465,
-      auth: { user, pass: password },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 15000,
-    });
   }
 
   private cleanEnvironmentValue(value?: string) {
