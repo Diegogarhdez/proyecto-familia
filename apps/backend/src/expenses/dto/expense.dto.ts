@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Matches, Min } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Matches, MaxLength, Min } from 'class-validator';
 
 export class MonthDto {
   @IsString()
@@ -17,10 +17,12 @@ export class UpsertIncomeDto extends MonthDto {
 export class CreateExpenseCategoryDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(100)
   name: string;
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(10)
   emoji: string;
 
   @Type(() => Number)
@@ -32,10 +34,12 @@ export class CreateExpenseCategoryDto {
 export class CreateExpenseDto extends MonthDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(100)
   name: string;
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(10)
   emoji: string;
 
   @Type(() => Number)

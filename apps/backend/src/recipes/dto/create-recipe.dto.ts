@@ -7,6 +7,7 @@ import {
   IsNumber,
   IsPositive,
   IsString,
+  MaxLength,
   ValidateNested,
 } from 'class-validator';
 
@@ -23,6 +24,7 @@ export enum RecipeUnit {
 export class CreateRecipeIngredientDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(150)
   name: string;
 
   @Type(() => Number)
@@ -37,6 +39,7 @@ export class CreateRecipeIngredientDto {
 export class CreateRecipeDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(250)
   name: string;
 
   @IsArray()
@@ -48,5 +51,6 @@ export class CreateRecipeDto {
   @IsArray()
   @ArrayMinSize(1)
   @IsString({ each: true })
+  @MaxLength(1000, { each: true })
   steps: string[];
 }
