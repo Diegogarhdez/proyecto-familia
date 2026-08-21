@@ -32,6 +32,10 @@ export class AuthService {
   }
 
   async register(dto: RegisterDto) {
+    if (dto.password !== dto.confirmPassword) {
+      throw new ConflictException('Las contraseñas no coinciden');
+    }
+
     const email = this.normalizeEmail(dto.email);
 
     // Verificamos si el usuario ya existe
