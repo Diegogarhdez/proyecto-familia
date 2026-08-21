@@ -73,7 +73,7 @@ export class ExpenseService {
     const user = await this.getUser(userId);
     await this.prisma.monthlyIncome.upsert({
       where: { userId_month: { userId, month: dto.month } },
-      update: { amount: dto.amount },
+      update: { amount: { increment: dto.amount } },
       create: { userId, familyId: user.familyId, month: dto.month, amount: dto.amount },
     });
     return this.broadcast(userId, dto.month);
@@ -81,9 +81,9 @@ export class ExpenseService {
 
   async removeIncome(userId: string, month: string) {
     const user = await this.getUser(userId);
-    await this.prisma.monthlyIncome.deleteMany({
-      where: { userId, familyId: user.familyId, month },
-    });
+    const income = await this.prisma.monthlyIncome.findUnique({ where: { userId_month: { userId, month } } });
+    if (!income || income.familyId !== user.familyId) throw new NotFoundException('Aportación no encontrada');
+    await this.prisma.monthlyIncome.delete({ where: { userId_month: { userId, month } } });
     return this.broadcast(userId, month);
   }
 

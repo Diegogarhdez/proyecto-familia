@@ -22,10 +22,10 @@ export class ExpenseController {
     return this.expenseService.upsertIncome(user.sub, dto);
   }
 
-  @Delete('income')
-  removeIncome(@Request() req, @Query() query: MonthDto) {
+  @Delete('income/:month')
+  removeIncome(@Request() req, @Param('month') month: string) {
     const user = req.user as JwtUserPayload;
-    return this.expenseService.removeIncome(user.sub, query.month);
+    return this.expenseService.removeIncome(user.sub, month);
   }
 
   @Post('categories')

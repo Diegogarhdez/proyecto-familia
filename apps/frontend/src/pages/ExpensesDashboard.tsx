@@ -53,7 +53,7 @@ export const ExpensesDashboard = () => {
         setFamilyId(profile.data.family.id);
         setCurrentUserId(profile.data.id);
         setDashboard(response.data);
-        setIncome(String(response.data.myIncome || ''));
+        setIncome('');
       })
       .catch(() => alive && setError('No pudimos cargar el control de gastos.'))
       .finally(() => alive && setIsLoading(false));
@@ -68,7 +68,7 @@ export const ExpensesDashboard = () => {
     socket.on('expensesUpdated', (nextDashboard: Dashboard) => {
       if (nextDashboard.month === month) {
         setDashboard(nextDashboard);
-        setIncome(String(nextDashboard.myIncome || ''));
+        setIncome('');
       }
     });
     return () => { socket.off('expensesUpdated'); socket.disconnect(); };
@@ -76,14 +76,17 @@ export const ExpensesDashboard = () => {
 
   const submitIncome = async (event: FormEvent) => {
     event.preventDefault();
-    try { await apiClient.patch('/expenses/income', { month, amount: Number(income) || 0 }); }
+    try {
+      await apiClient.patch('/expenses/income', { month, amount: Number(income) || 0 });
+      setIncome('');
+    }
     catch { setError('No se pudo guardar tu aportación.'); }
   };
 
   const removeIncome = async () => {
     try {
-      await apiClient.delete(`/expenses/income?month=${month}`);
-      setIncome('');
+      await apiClient.delete(`/expenses/income/${month}`);
+      await apiClient.delete(`/expenses/income/${month}`);
     } catch {
       setError('No se pudo eliminar tu aportación.');
     }
