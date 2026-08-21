@@ -11,6 +11,18 @@ type Dashboard = { month: string; myIncome: number; totalIncome: number; totalSp
 
 const money = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' });
 const currentMonth = () => new Date().toISOString().slice(0, 7);
+const monthFormatter = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' });
+
+const shiftMonth = (month: string, offset: number) => {
+  const date = new Date(`${month}-01T12:00:00`);
+  date.setMonth(date.getMonth() + offset);
+  return date.toISOString().slice(0, 7);
+};
+
+const formatMonth = (month: string) => {
+  const label = monthFormatter.format(new Date(`${month}-01T12:00:00`));
+  return label.charAt(0).toUpperCase() + label.slice(1);
+};
 
 export const ExpensesDashboard = () => {
   const { logout } = useAuth();
@@ -98,7 +110,21 @@ export const ExpensesDashboard = () => {
         </header>
 
         <section className="rounded-[32px] border border-white/70 bg-white/85 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] sm:p-8">
-          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><span className="inline-flex rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-teal-800">Finanzas</span><h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">Una vista clara del dinero familiar</h2></div><label className="text-sm font-semibold text-slate-600">Mes<input type="month" value={month} onChange={(event) => setMonth(event.target.value)} className="mt-2 block rounded-2xl border border-slate-200 bg-white px-4 py-2.5 font-normal text-slate-900" /></label></div>
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <span className="inline-flex rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-teal-800">Finanzas</span>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">Una vista clara del dinero familiar</h2>
+            </div>
+            <div className="flex items-center gap-2 self-start rounded-[22px] border border-slate-200 bg-slate-50 p-2 sm:self-auto">
+              <button type="button" onClick={() => setMonth(shiftMonth(month, -1))} className="grid h-10 w-10 place-items-center rounded-2xl bg-white text-lg text-slate-600 shadow-sm transition hover:bg-teal-50 hover:text-teal-700" aria-label="Mes anterior">←</button>
+              <div className="relative min-w-36 text-center">
+                <span className="pointer-events-none block text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Mes activo</span>
+                <span className="pointer-events-none block text-sm font-bold text-slate-800">{formatMonth(month)}</span>
+                <input type="month" value={month} onChange={(event) => setMonth(event.target.value)} className="absolute inset-0 h-full w-full cursor-pointer opacity-0" aria-label="Elegir mes" />
+              </div>
+              <button type="button" onClick={() => setMonth(shiftMonth(month, 1))} className="grid h-10 w-10 place-items-center rounded-2xl bg-white text-lg text-slate-600 shadow-sm transition hover:bg-teal-50 hover:text-teal-700" aria-label="Mes siguiente">→</button>
+            </div>
+          </div>
 
           {isLoading ? <div className="rounded-2xl bg-slate-50 p-5 text-sm text-slate-500">Cargando gastos...</div> : dashboard && <>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
