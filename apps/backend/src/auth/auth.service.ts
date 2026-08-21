@@ -267,8 +267,8 @@ export class AuthService {
   }
 
   private async sendVerificationEmail(email: string, code: string) {
-    const apiKey = process.env.RESEND_API_KEY;
-    const from = process.env.RESEND_FROM_EMAIL;
+    const apiKey = this.cleanEnvironmentValue(process.env.RESEND_API_KEY);
+    const from = this.cleanEnvironmentValue(process.env.RESEND_FROM_EMAIL);
     if (!apiKey || !from) {
       throw new Error('Faltan RESEND_API_KEY o RESEND_FROM_EMAIL');
     }
@@ -291,6 +291,10 @@ export class AuthService {
       const responseBody = await response.text();
       throw new Error(`Resend respondió ${response.status}: ${responseBody}`);
     }
+  }
+
+  private cleanEnvironmentValue(value?: string) {
+    return value?.trim().replace(/^['"]|['"]$/g, '');
   }
 
 }
