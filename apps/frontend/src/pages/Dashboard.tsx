@@ -147,7 +147,12 @@ export const Dashboard = () => {
 
             <div>
               <p className="text-sm font-medium text-slate-500">Espacio familiar</p>
-              <h1 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">{familyName}</h1>
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">{familyName}</h1>
+                <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800">
+                  {isAdmin ? 'Administrador' : 'Miembro'}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -244,19 +249,6 @@ export const Dashboard = () => {
         </section>
         
 
-        <section className="grid gap-4 md:grid-cols-2">
-          <article className="rounded-[28px] border border-slate-200 bg-white/85 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-            <p className="text-sm font-medium text-slate-500">Familia activa</p>
-            <p className="mt-2 text-xl font-semibold text-slate-900">{familyName}</p>
-          </article>
-
-          <article className="rounded-[28px] border border-slate-200 bg-white/85 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-            <p className="text-sm font-medium text-slate-500">Estado</p>
-            <p className="mt-2 text-xl font-semibold text-slate-900">
-              {profile?.role === 'ADMIN' ? 'Eres administrador de la familia' : 'Miembro de la familia'}
-            </p>
-          </article>
-        </section>
       </div>
     </main>
   );
