@@ -14,6 +14,7 @@ import { CalendarPage } from './pages/CalendarPage';
 import { VerifyEmail } from './pages/VerifyEmail';
 import ScrollToTop from './components/ScrollToTop';
 import { RealtimeProvider } from './context/RealtimeContext';
+import { TaskPlanningPage } from './pages/TaskPlanningPage';
 
 export default function App() {
   return (
@@ -51,6 +52,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <TasksList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/task-planning"
+            element={
+              <ProtectedRoute>
+                <TaskPlanningPage />
               </ProtectedRoute>
             }
           />

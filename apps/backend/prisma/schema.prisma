@@ -33,6 +33,7 @@ model Family {
   users         User[]
   shoppingItems ShoppingItem[]
   tasks         Task[]
+  taskPlans     TaskPlan[]
   ideasPlans    IdeaPlan[]
   recipes       Recipe[]
   incomes       MonthlyIncome[]
@@ -58,6 +59,8 @@ model User {
   family   Family @relation(fields: [familyId], references: [id])
   incomes  MonthlyIncome[]
   createdEvents CalendarEvent[]
+  preferredTasks Task[] @relation("TaskPreference")
+  assignedTaskAssignments TaskAssignment[] @relation("TaskAssignmentUser")
 
   @@map("users")
 }
@@ -80,10 +83,50 @@ model Task {
   isDone    Boolean  @default(false)
   createdAt DateTime @default(now())
 
+  timeMinutes     Float  @default(30)
+  effort          Int    @default(1)
+  weeklyFrequency Int    @default(1)
+  preferredUserId String?
+
   familyId String
   family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  preferredUser User? @relation("TaskPreference", fields: [preferredUserId], references: [id], onDelete: SetNull)
+  assignments TaskAssignment[]
 
+  @@index([familyId])
+  @@index([preferredUserId])
   @@map("tasks")
+}
+
+model TaskPlan {
+  id        String   @id @default(uuid())
+  weekStart DateTime @db.Date
+  createdAt DateTime @default(now())
+
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  assignments TaskAssignment[]
+
+  @@unique([familyId, weekStart])
+  @@index([familyId, weekStart])
+  @@map("task_plans")
+}
+
+model TaskAssignment {
+  id            String  @id @default(uuid())
+  weight        Float
+  wasPreferred  Boolean @default(false)
+
+  planId        String
+  plan          TaskPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  taskId        String
+  task          Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  assignedUserId String
+  assignedUser  User @relation("TaskAssignmentUser", fields: [assignedUserId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, taskId])
+  @@index([planId, assignedUserId])
+  @@map("task_assignments")
 }
 
 model IdeaPlan {

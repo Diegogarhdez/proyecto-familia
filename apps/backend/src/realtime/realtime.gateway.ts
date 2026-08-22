@@ -84,6 +84,10 @@ export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect
     this.emitToFamily(familyId, 'calendarEventsUpdated', events);
   }
 
+  emitTaskPlanUpdated(familyId: string, plan: unknown) {
+    this.emitToFamily(familyId, 'taskPlanUpdated', plan);
+  }
+
   private emitToFamily(familyId: string, event: string, payload: unknown) {
     this.server.to(this.roomName(familyId)).emit(event, payload);
   }

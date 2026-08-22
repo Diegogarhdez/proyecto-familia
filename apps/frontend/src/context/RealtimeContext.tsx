@@ -28,6 +28,7 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
       'recipeListUpdated',
       'expensesUpdated',
       'calendarEventsUpdated',
+      'taskPlanUpdated',
     ];
 
     for (const eventName of eventNames) {

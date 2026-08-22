@@ -14,6 +14,7 @@ import { RecipeModule } from './recipes/recipe.module';
 import { ExpenseModule } from './expenses/expense.module';
 import { CalendarEventsModule } from './calendar-events/calendar-events.module';
 import { RealtimeModule } from './realtime/realtime.module';
+import { TaskPlanningModule } from './task-planning/task-planning.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { RealtimeModule } from './realtime/realtime.module';
     ExpenseModule,
     CalendarEventsModule,
     RealtimeModule,
+    TaskPlanningModule,
   ],
   controllers: [AppController],
   providers: [

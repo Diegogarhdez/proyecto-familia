@@ -21,11 +21,12 @@ const features = [
     href: '/shopping',
   },
   {
-    title: 'Rutinas semanales',
-    description: 'Organiza tareas por días para que todo fluya mejor en familia.',
+    title: 'Planificación de tareas',
+    description: 'Reparte las tareas semanales de forma equilibrada según tiempo, esfuerzo y frecuencia.',
     accent: 'bg-sky-400',
     icon: '🎯',
     kind: 'feature' as const,
+    href: '/task-planning',
   },
   {
     title: 'Ideas y planes',
