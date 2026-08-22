@@ -12,6 +12,7 @@ import { TaskModule } from './tasks/task.module';
 import { IdeaPlanModule } from './ideas-plans/idea-plan.module';
 import { RecipeModule } from './recipes/recipe.module';
 import { ExpenseModule } from './expenses/expense.module';
+import { CalendarEventsModule } from './calendar-events/calendar-events.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { ExpenseModule } from './expenses/expense.module';
     IdeaPlanModule,
     RecipeModule,
     ExpenseModule,
+    CalendarEventsModule,
   ],
   controllers: [AppController],
   providers: [

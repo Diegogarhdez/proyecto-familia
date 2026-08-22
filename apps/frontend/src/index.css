@@ -38,3 +38,89 @@ body {
 ::selection {
   background: rgba(249, 115, 22, 0.2);
 }
+
+@layer components {
+  .fc {
+    --fc-border-color: rgba(148, 163, 184, 0.24);
+    --fc-button-text-color: #334155;
+    --fc-button-bg-color: #f8fafc;
+    --fc-button-border-color: rgba(148, 163, 184, 0.3);
+    --fc-button-hover-bg-color: #fff7ed;
+    --fc-button-hover-border-color: rgba(251, 146, 60, 0.6);
+    --fc-button-active-bg-color: #f59e0b;
+    --fc-button-active-border-color: #f59e0b;
+    --fc-event-bg-color: #3b82f6;
+    --fc-event-border-color: #3b82f6;
+    --fc-page-bg-color: transparent;
+    color: #0f172a;
+  }
+
+  .fc .fc-toolbar {
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .fc .fc-toolbar-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .fc .fc-button {
+    border-radius: 9999px;
+    box-shadow: none;
+    text-transform: none;
+    font-weight: 600;
+    padding-inline: 0.95rem;
+  }
+
+  .fc .fc-button:focus {
+    box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.18);
+  }
+
+  .fc .fc-button-primary:not(:disabled).fc-button-active,
+  .fc .fc-button-primary:not(:disabled):active {
+    color: #fff;
+  }
+
+  .fc .fc-col-header-cell-cushion,
+  .fc .fc-daygrid-day-number {
+    color: #475569;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .fc .fc-daygrid-day.fc-day-today,
+  .fc .fc-timegrid-col.fc-day-today {
+    background: rgba(251, 191, 36, 0.08);
+  }
+
+  .fc .fc-daygrid-event,
+  .fc .fc-timegrid-event {
+    border-radius: 0.9rem;
+    padding: 0.15rem 0.35rem;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  }
+
+  .fc .fc-event-title {
+    font-weight: 600;
+  }
+
+  .fc .fc-daygrid-event .fc-event-main,
+  .fc .fc-timegrid-event .fc-event-main {
+    white-space: normal;
+  }
+
+  .fc .fc-daygrid-more-link {
+    color: #c2410c;
+    font-weight: 600;
+  }
+
+  .fc .fc-scrollgrid,
+  .fc .fc-scrollgrid-section > td,
+  .fc .fc-theme-standard td,
+  .fc .fc-theme-standard th {
+    border-color: rgba(148, 163, 184, 0.24);
+  }
+}

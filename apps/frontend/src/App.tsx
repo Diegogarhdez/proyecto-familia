@@ -10,6 +10,7 @@ import { TasksList } from './pages/TasksList';
 import { IdeasPlansList } from './pages/IdeasPlansList';
 import { RecipesList } from './pages/RecipesList';
 import { ExpensesDashboard } from './pages/ExpensesDashboard';
+import { CalendarPage } from './pages/CalendarPage';
 import { VerifyEmail } from './pages/VerifyEmail';
 import ScrollToTop from './components/ScrollToTop';
 
@@ -64,6 +65,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <RecipesList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/calendar"
+            element={
+              <ProtectedRoute>
+                <CalendarPage />
               </ProtectedRoute>
             }
           />

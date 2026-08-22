@@ -10,6 +10,7 @@ const features = [
     accent: 'bg-amber-400',
     icon: '📅',
     kind: 'feature' as const,
+    href: '/calendar',
   },
   {
     title: 'Lista de la compra',
