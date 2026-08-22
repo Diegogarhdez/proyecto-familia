@@ -59,6 +59,27 @@ const features = [
     kind: 'feature' as const,
     href: '/expenses',
   },
+  {
+    title: 'Recordatorios',
+    description: 'Organiza avisos como la ITV, citas del DNI o visitas médicas. Podrá conectarse con el calendario familiar.',
+    accent: 'bg-violet-400',
+    icon: '🔔',
+    kind: 'feature' as const,
+  },
+  {
+    title: 'Baúl de información',
+    description: 'Guarda información valiosa de la familia para tenerla siempre a mano, sin necesidad de ocultarla.',
+    accent: 'bg-lime-400',
+    icon: '🗃️',
+    kind: 'feature' as const,
+  },
+  {
+    title: 'Planificador de menús semanales',
+    description: 'Planifica las comidas de la semana con sinergia entre tus recetas y la lista de la compra.',
+    accent: 'bg-rose-400',
+    icon: '🍲',
+    kind: 'feature' as const,
+  },
 ];
 
 type Profile = {
