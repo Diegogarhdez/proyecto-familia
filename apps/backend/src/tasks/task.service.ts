@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { TaskGateway } from './task.gateway';
+import { RealtimeGateway } from '../realtime/realtime.gateway';
 
 @Injectable()
 export class TaskService {
   constructor(
     private prisma: PrismaService,
-    private readonly taskGateway: TaskGateway,
+    private readonly realtimeGateway: RealtimeGateway,
   ) {}
 
   private async getUserFamilyId(userId: string) {
@@ -75,6 +75,6 @@ export class TaskService {
       orderBy: { createdAt: 'desc' },
     });
 
-    this.taskGateway.emitTaskListUpdated(familyId, tasks);
+    this.realtimeGateway.emitTasksListUpdated(familyId, tasks);
   }
 }

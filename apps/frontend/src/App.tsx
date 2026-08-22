@@ -13,13 +13,15 @@ import { ExpensesDashboard } from './pages/ExpensesDashboard';
 import { CalendarPage } from './pages/CalendarPage';
 import { VerifyEmail } from './pages/VerifyEmail';
 import ScrollToTop from './components/ScrollToTop';
+import { RealtimeProvider } from './context/RealtimeContext';
 
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <ScrollToTop />
-        <Routes>
+      <RealtimeProvider>
+        <BrowserRouter>
+          <ScrollToTop />
+          <Routes>
           {/* Rutas Públicas */}
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
@@ -84,8 +86,9 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-        </Routes>
-      </BrowserRouter>
+          </Routes>
+        </BrowserRouter>
+      </RealtimeProvider>
     </AuthProvider>
   );
 }

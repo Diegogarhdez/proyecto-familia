@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateExpenseCategoryDto, CreateExpenseDto, UpsertIncomeDto } from './dto/expense.dto';
-import { ExpenseGateway } from './expense.gateway';
+import { RealtimeGateway } from '../realtime/realtime.gateway';
 
 @Injectable()
 export class ExpenseService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly expenseGateway: ExpenseGateway,
+    private readonly realtimeGateway: RealtimeGateway,
   ) {}
 
   private async getUser(userId: string) {
@@ -137,7 +137,7 @@ export class ExpenseService {
   private async broadcast(userId: string, month: string) {
     const user = await this.getUser(userId);
     const dashboard = await this.dashboardForUser(userId, month);
-    this.expenseGateway.emitExpensesUpdated(user.familyId, dashboard);
+    this.realtimeGateway.emitExpensesUpdated(user.familyId, dashboard);
     return dashboard;
   }
 }

@@ -1,8 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { io } from 'socket.io-client';
 import { apiClient } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { useRealtime } from '../context/RealtimeContext';
 
 type TaskItem = {
   id: string;
@@ -11,18 +11,12 @@ type TaskItem = {
   createdAt: string;
 };
 
-type Profile = {
-  family: {
-    id: string;
-  };
-};
-
 export const TasksList = () => {
   const { logout } = useAuth();
+  const { subscribe } = useRealtime();
   const navigate = useNavigate();
   const [items, setItems] = useState<TaskItem[]>([]);
   const [name, setName] = useState('');
-  const [familyId, setFamilyId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,16 +26,12 @@ export const TasksList = () => {
 
     const bootstrap = async () => {
       try {
-        const [profileResponse, tasksResponse] = await Promise.all([
-          apiClient.get<Profile>('/auth/me'),
-          apiClient.get<TaskItem[]>('/tasks'),
-        ]);
+        const tasksResponse = await apiClient.get<TaskItem[]>('/tasks');
 
         if (!alive) {
           return;
         }
 
-        setFamilyId(profileResponse.data.family.id);
         setItems(tasksResponse.data);
       } catch {
         if (alive) {
@@ -61,32 +51,7 @@ export const TasksList = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (!familyId) {
-      return;
-    }
-
-    const SOCKET_URL = import.meta.env.VITE_API_URL
-      ? import.meta.env.VITE_API_URL.replace('/api', '')
-      : 'http://localhost:3000';
-
-    const taskSocket = io(SOCKET_URL, {
-      transports: ['websocket'],
-    });
-
-    taskSocket.on('connect', () => {
-      taskSocket.emit('joinFamilyRoom', familyId);
-    });
-
-    taskSocket.on('tasksListUpdated', (nextItems: TaskItem[]) => {
-      setItems(nextItems);
-    });
-
-    return () => {
-      taskSocket.off('tasksListUpdated');
-      taskSocket.disconnect();
-    };
-  }, [familyId]);
+  useEffect(() => subscribe('tasksListUpdated', (payload) => setItems(payload as TaskItem[])), [subscribe]);
 
   const handleAdd = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

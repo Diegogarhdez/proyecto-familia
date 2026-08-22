@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { io } from 'socket.io-client';
 import { apiClient } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { useRealtime } from '../context/RealtimeContext';
 
 type Contribution = { userId: string; amount: number; user: { id: string; name: string } };
 type Category = { id: string; name: string; emoji: string; monthlyLimit: number; spent: number; percentage: number };
@@ -29,6 +29,7 @@ const formatMonth = (month: string) => {
 
 export const ExpensesDashboard = () => {
   const { logout } = useAuth();
+  const { subscribe } = useRealtime();
   const navigate = useNavigate();
   const [month, setMonth] = useState(currentMonth);
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
@@ -41,7 +42,6 @@ export const ExpensesDashboard = () => {
   const [categoryEmoji, setCategoryEmoji] = useState('📦');
   const [categoryLimit, setCategoryLimit] = useState('');
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [familyId, setFamilyId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,7 +50,6 @@ export const ExpensesDashboard = () => {
     Promise.all([apiClient.get<{ id: string; family: { id: string } }>('/auth/me'), apiClient.get<Dashboard>(`/expenses/dashboard?month=${month}`)])
       .then(([profile, response]) => {
         if (!alive) return;
-        setFamilyId(profile.data.family.id);
         setCurrentUserId(profile.data.id);
         setDashboard(response.data);
         setIncome('');
@@ -60,19 +59,13 @@ export const ExpensesDashboard = () => {
     return () => { alive = false; };
   }, [month]);
 
-  useEffect(() => {
-    if (!familyId) return;
-    const socketUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '') : 'http://localhost:3000';
-    const socket = io(socketUrl, { transports: ['websocket'] });
-    socket.on('connect', () => socket.emit('joinFamilyRoom', familyId));
-    socket.on('expensesUpdated', (nextDashboard: Dashboard) => {
-      if (nextDashboard.month === month) {
-        setDashboard(nextDashboard);
-        setIncome('');
-      }
-    });
-    return () => { socket.off('expensesUpdated'); socket.disconnect(); };
-  }, [familyId, month]);
+  useEffect(() => subscribe('expensesUpdated', (payload) => {
+    const nextDashboard = payload as Dashboard;
+    if (nextDashboard.month === month) {
+      setDashboard(nextDashboard);
+      setIncome('');
+    }
+  }), [month, subscribe]);
 
   const submitIncome = async (event: FormEvent) => {
     event.preventDefault();

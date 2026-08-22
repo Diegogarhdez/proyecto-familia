@@ -1,11 +1,11 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { io } from 'socket.io-client';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin, { type EventResizeDoneArg } from '@fullcalendar/interaction';
 import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core';
+import { useRealtime } from '../context/RealtimeContext';
 import { apiClient } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
@@ -23,12 +23,6 @@ type CalendarEventItem = {
   creator: {
     id: string;
     name: string;
-  };
-};
-
-type Profile = {
-  family: {
-    id: string;
   };
 };
 
@@ -97,9 +91,9 @@ const formatDateTime = (value: string, isAllDay: boolean) => {
 
 export const CalendarPage = () => {
   const { logout } = useAuth();
+  const { subscribe } = useRealtime();
   const navigate = useNavigate();
   const [events, setEvents] = useState<CalendarEventItem[]>([]);
-  const [familyId, setFamilyId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -111,16 +105,12 @@ export const CalendarPage = () => {
 
     const bootstrap = async () => {
       try {
-        const [profileResponse, eventsResponse] = await Promise.all([
-          apiClient.get<Profile>('/auth/me'),
-          apiClient.get<CalendarEventItem[]>('/calendar-events'),
-        ]);
+        const eventsResponse = await apiClient.get<CalendarEventItem[]>('/calendar-events');
 
         if (!alive) {
           return;
         }
 
-        setFamilyId(profileResponse.data.family.id);
         setEvents(eventsResponse.data);
       } catch {
         if (alive) {
@@ -140,32 +130,7 @@ export const CalendarPage = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (!familyId) {
-      return;
-    }
-
-    const socketUrl = import.meta.env.VITE_API_URL
-      ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '')
-      : 'http://localhost:3000';
-
-    const calendarSocket = io(socketUrl, {
-      transports: ['websocket'],
-    });
-
-    calendarSocket.on('connect', () => {
-      calendarSocket.emit('joinFamilyRoom', familyId);
-    });
-
-    calendarSocket.on('calendarEventsUpdated', (nextEvents: CalendarEventItem[]) => {
-      setEvents(nextEvents);
-    });
-
-    return () => {
-      calendarSocket.off('calendarEventsUpdated');
-      calendarSocket.disconnect();
-    };
-  }, [familyId]);
+  useEffect(() => subscribe('calendarEventsUpdated', (payload) => setEvents(payload as CalendarEventItem[])), [subscribe]);
 
   const resetForm = () => {
     setEditingId(null);

@@ -3,13 +3,13 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCalendarEventDto } from './dto/create-calendar-event.dto';
 import { UpdateCalendarEventDto } from './dto/update-calendar-event.dto';
-import { CalendarEventsGateway } from './calendar-events.gateway';
+import { RealtimeGateway } from '../realtime/realtime.gateway';
 
 @Injectable()
 export class CalendarEventsService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly calendarEventsGateway: CalendarEventsGateway,
+    private readonly realtimeGateway: RealtimeGateway,
   ) {}
 
   private readonly eventInclude = {
@@ -132,6 +132,6 @@ export class CalendarEventsService {
       include: this.eventInclude,
     });
 
-    this.calendarEventsGateway.emitCalendarEventsUpdated(familyId, events);
+    this.realtimeGateway.emitCalendarEventsUpdated(familyId, events);
   }
 }

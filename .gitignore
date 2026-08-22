@@ -1,1 +1,4 @@
 script_git.sh
+/scripts
+!/scripts/
+!/scripts/load-test.mjs

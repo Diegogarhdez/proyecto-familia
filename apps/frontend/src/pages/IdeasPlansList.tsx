@@ -1,8 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { io } from 'socket.io-client';
 import { apiClient } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { useRealtime } from '../context/RealtimeContext';
 
 type IdeaPlanItem = {
   id: string;
@@ -11,18 +11,12 @@ type IdeaPlanItem = {
   createdAt: string;
 };
 
-type Profile = {
-  family: {
-    id: string;
-  };
-};
-
 export const IdeasPlansList = () => {
   const { logout } = useAuth();
+  const { subscribe } = useRealtime();
   const navigate = useNavigate();
   const [items, setItems] = useState<IdeaPlanItem[]>([]);
   const [name, setName] = useState('');
-  const [familyId, setFamilyId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,16 +26,12 @@ export const IdeasPlansList = () => {
 
     const bootstrap = async () => {
       try {
-        const [profileResponse, ideasPlansResponse] = await Promise.all([
-          apiClient.get<Profile>('/auth/me'),
-          apiClient.get<IdeaPlanItem[]>('/ideas-plans'),
-        ]);
+        const ideasPlansResponse = await apiClient.get<IdeaPlanItem[]>('/ideas-plans');
 
         if (!alive) {
           return;
         }
 
-        setFamilyId(profileResponse.data.family.id);
         setItems(ideasPlansResponse.data);
       } catch {
         if (alive) {
@@ -61,32 +51,7 @@ export const IdeasPlansList = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (!familyId) {
-      return;
-    }
-
-    const socketUrl = import.meta.env.VITE_API_URL
-      ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '')
-      : 'http://localhost:3000';
-
-    const ideasPlansSocket = io(socketUrl, {
-      transports: ['websocket'],
-    });
-
-    ideasPlansSocket.on('connect', () => {
-      ideasPlansSocket.emit('joinFamilyRoom', familyId);
-    });
-
-    ideasPlansSocket.on('ideasPlansListUpdated', (nextItems: IdeaPlanItem[]) => {
-      setItems(nextItems);
-    });
-
-    return () => {
-      ideasPlansSocket.off('ideasPlansListUpdated');
-      ideasPlansSocket.disconnect();
-    };
-  }, [familyId]);
+  useEffect(() => subscribe('ideasPlansListUpdated', (payload) => setItems(payload as IdeaPlanItem[])), [subscribe]);
 
   const handleAdd = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

@@ -1,8 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { io } from 'socket.io-client';
 import { apiClient } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { useRealtime } from '../context/RealtimeContext';
 
 type ShoppingItem = {
   id: string;
@@ -12,19 +12,13 @@ type ShoppingItem = {
   createdAt: string;
 };
 
-type Profile = {
-  family: {
-    id: string;
-  };
-};
-
 export const ShoppingList = () => {
   const { logout } = useAuth();
+  const { subscribe } = useRealtime();
   const navigate = useNavigate();
   const [items, setItems] = useState<ShoppingItem[]>([]);
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState(1);
-  const [familyId, setFamilyId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,16 +28,12 @@ export const ShoppingList = () => {
 
     const bootstrap = async () => {
       try {
-        const [profileResponse, itemsResponse] = await Promise.all([
-          apiClient.get<Profile>('/auth/me'),
-          apiClient.get<ShoppingItem[]>('/shopping'),
-        ]);
+        const itemsResponse = await apiClient.get<ShoppingItem[]>('/shopping');
 
         if (!alive) {
           return;
         }
 
-        setFamilyId(profileResponse.data.family.id);
         setItems(itemsResponse.data);
       } catch {
         if (alive) {
@@ -63,32 +53,7 @@ export const ShoppingList = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (!familyId) {
-      return;
-    }
-
-    const SOCKET_URL = import.meta.env.VITE_API_URL 
-        ? import.meta.env.VITE_API_URL.replace('/api', '') 
-        : 'http://localhost:3000';
-
-    const shoppingSocket = io(SOCKET_URL, {
-      transports: ['websocket'],
-    });
-
-    shoppingSocket.on('connect', () => {
-      shoppingSocket.emit('joinFamilyRoom', familyId);
-    });
-
-    shoppingSocket.on('shoppingListUpdated', (nextItems: ShoppingItem[]) => {
-      setItems(nextItems);
-    });
-
-    return () => {
-      shoppingSocket.off('shoppingListUpdated');
-      shoppingSocket.disconnect();
-    };
-  }, [familyId]);
+  useEffect(() => subscribe('shoppingListUpdated', (payload) => setItems(payload as ShoppingItem[])), [subscribe]);
 
   const handleAdd = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

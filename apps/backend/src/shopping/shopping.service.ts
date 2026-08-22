@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service'; // Ajusta la ruta a tu PrismaService
 import { CreateShoppingDto } from './dto/create-shopping.dto';
-import { ShoppingGateway } from './shopping.gateway';
+import { RealtimeGateway } from '../realtime/realtime.gateway';
 
 @Injectable()
 export class ShoppingService {
   constructor(
     private prisma: PrismaService,
-    private readonly shoppingGateway: ShoppingGateway,
+    private readonly realtimeGateway: RealtimeGateway,
   ) {}
 
   // Función auxiliar para obtener la familia del usuario logueado
@@ -102,6 +102,6 @@ export class ShoppingService {
       orderBy: { createdAt: 'desc' },
     });
 
-    this.shoppingGateway.emitShoppingListUpdated(familyId, items);
+    this.realtimeGateway.emitShoppingListUpdated(familyId, items);
   }
 }

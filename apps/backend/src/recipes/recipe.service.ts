@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
-import { RecipeGateway } from './recipe.gateway';
+import { RealtimeGateway } from '../realtime/realtime.gateway';
 
 @Injectable()
 export class RecipeService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly recipeGateway: RecipeGateway,
+    private readonly realtimeGateway: RealtimeGateway,
   ) {}
 
   private async getUserFamilyId(userId: string) {
@@ -73,6 +73,6 @@ export class RecipeService {
       orderBy: { createdAt: 'desc' },
       include: this.recipeInclude,
     });
-    this.recipeGateway.emitRecipeListUpdated(familyId, recipes);
+    this.realtimeGateway.emitRecipeListUpdated(familyId, recipes);
   }
 }

@@ -1,8 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { io } from 'socket.io-client';
 import { apiClient } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { useRealtime } from '../context/RealtimeContext';
 
 type RecipeUnit = 'GRAMS' | 'KILOGRAMS' | 'MILLILITERS' | 'LITERS' | 'TABLESPOONS' | 'OUNCES' | 'UNITS';
 
@@ -33,12 +33,6 @@ type Recipe = {
   steps: RecipeStep[];
 };
 
-type Profile = {
-  family: {
-    id: string;
-  };
-};
-
 const unitLabels: Record<RecipeUnit, string> = {
   GRAMS: 'gramos',
   KILOGRAMS: 'kilogramos',
@@ -57,12 +51,12 @@ const emptyIngredient = (): IngredientForm => ({
 
 export const RecipesList = () => {
   const { logout } = useAuth();
+  const { subscribe } = useRealtime();
   const navigate = useNavigate();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [recipeName, setRecipeName] = useState('');
   const [ingredients, setIngredients] = useState<IngredientForm[]>([emptyIngredient()]);
   const [steps, setSteps] = useState<string[]>(['']);
-  const [familyId, setFamilyId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,13 +66,9 @@ export const RecipesList = () => {
 
     const bootstrap = async () => {
       try {
-        const [profileResponse, recipesResponse] = await Promise.all([
-          apiClient.get<Profile>('/auth/me'),
-          apiClient.get<Recipe[]>('/recipes'),
-        ]);
+        const recipesResponse = await apiClient.get<Recipe[]>('/recipes');
 
         if (!alive) return;
-        setFamilyId(profileResponse.data.family.id);
         setRecipes(recipesResponse.data);
       } catch {
         if (alive) setError('No pudimos cargar el recetario.');
@@ -93,26 +83,7 @@ export const RecipesList = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (!familyId) return;
-
-    const socketUrl = import.meta.env.VITE_API_URL
-      ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '')
-      : 'http://localhost:3000';
-    const recipeSocket = io(socketUrl, { transports: ['websocket'] });
-
-    recipeSocket.on('connect', () => {
-      recipeSocket.emit('joinFamilyRoom', familyId);
-    });
-    recipeSocket.on('recipeListUpdated', (nextRecipes: Recipe[]) => {
-      setRecipes(nextRecipes);
-    });
-
-    return () => {
-      recipeSocket.off('recipeListUpdated');
-      recipeSocket.disconnect();
-    };
-  }, [familyId]);
+  useEffect(() => subscribe('recipeListUpdated', (payload) => setRecipes(payload as Recipe[])), [subscribe]);
 
   const updateIngredient = (index: number, field: keyof IngredientForm, value: string) => {
     setIngredients((current) => current.map((ingredient, ingredientIndex) => (

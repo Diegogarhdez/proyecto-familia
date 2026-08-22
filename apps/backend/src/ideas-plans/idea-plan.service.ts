@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateIdeaPlanDto } from './dto/create-idea-plan.dto';
-import { IdeaPlanGateway } from './idea-plan.gateway';
+import { RealtimeGateway } from '../realtime/realtime.gateway';
 
 @Injectable()
 export class IdeaPlanService {
   constructor(
     private prisma: PrismaService,
-    private readonly ideaPlanGateway: IdeaPlanGateway,
+    private readonly realtimeGateway: RealtimeGateway,
   ) {}
 
   private async getUserFamilyId(userId: string) {
@@ -73,6 +73,6 @@ export class IdeaPlanService {
       orderBy: { createdAt: 'desc' },
     });
 
-    this.ideaPlanGateway.emitIdeaPlanListUpdated(familyId, ideasPlans);
+    this.realtimeGateway.emitIdeasPlansListUpdated(familyId, ideasPlans);
   }
 }

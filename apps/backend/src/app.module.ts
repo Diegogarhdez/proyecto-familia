@@ -13,6 +13,7 @@ import { IdeaPlanModule } from './ideas-plans/idea-plan.module';
 import { RecipeModule } from './recipes/recipe.module';
 import { ExpenseModule } from './expenses/expense.module';
 import { CalendarEventsModule } from './calendar-events/calendar-events.module';
+import { RealtimeModule } from './realtime/realtime.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { CalendarEventsModule } from './calendar-events/calendar-events.module';
     RecipeModule,
     ExpenseModule,
     CalendarEventsModule,
+    RealtimeModule,
   ],
   controllers: [AppController],
   providers: [
