@@ -147,19 +147,19 @@ export const Dashboard = () => {
 
             <div>
               <p className="text-sm font-medium text-slate-500">Espacio familiar</p>
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">{familyName}</h1>
-                <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800">
-                  {isAdmin ? 'Administrador' : 'Miembro'}
-                </span>
-              </div>
+              <h1 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">{familyName}</h1>
             </div>
           </div>
 
           <div className="flex items-center gap-3 self-start lg:self-auto">
             <div className="text-right">
               <p className="text-sm text-slate-500">Hola</p>
-              <p className="text-base font-semibold text-slate-900">{displayName}</p>
+              <div className="flex items-center justify-end gap-2">
+                <p className="text-base font-semibold text-slate-900">{displayName}</p>
+                <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800">
+                  {isAdmin ? 'Administrador' : 'Miembro'}
+                </span>
+              </div>
               {isAdmin && familyCode ? (
                 <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700">
                   <span>Código de familia</span>
