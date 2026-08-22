@@ -69,12 +69,15 @@ export const TaskPlanningPage = () => {
 
   const loads = useMemo(() => {
     const totals = new Map(members.map((member) => [member.id, 0]));
-    plan?.assignments.forEach((assignment) => {
+    const assignments = Array.isArray(plan?.assignments) ? plan.assignments : [];
+    assignments.forEach((assignment) => {
       totals.set(assignment.assignedUser.id, (totals.get(assignment.assignedUser.id) ?? 0) + assignment.weight);
     });
     const max = Math.max(...totals.values(), 0);
     return members.map((member) => ({ ...member, weight: totals.get(member.id) ?? 0, percentage: max ? ((totals.get(member.id) ?? 0) / max) * 100 : 0 }));
   }, [members, plan]);
+
+  const assignments = Array.isArray(plan?.assignments) ? plan.assignments : [];
 
   const handleCreate = async (event: FormEvent) => {
     event.preventDefault();
@@ -160,7 +163,7 @@ export const TaskPlanningPage = () => {
           {error && <div className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>}
 
           <div className="mt-6 overflow-x-auto rounded-[24px] border border-slate-200">
-            <table className="min-w-full text-left text-sm"><thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-4 py-3">Tarea</th><th className="px-4 py-3">Peso</th><th className="px-4 py-3">Asignada a</th><th className="px-4 py-3">Origen</th></tr></thead><tbody className="divide-y divide-slate-100">{plan?.assignments.map((assignment) => <tr key={assignment.id}><td className="px-4 py-3 font-medium text-slate-800">{assignment.task.name}</td><td className="px-4 py-3 text-slate-600">{assignment.weight.toFixed(1)}</td><td className="px-4 py-3 text-slate-700">{assignment.assignedUser.name}</td><td className="px-4 py-3">{assignment.wasPreferred ? <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-800">Preferencia</span> : <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-800">Equitativo</span>}</td></tr>)}</tbody></table>
+            <table className="min-w-full text-left text-sm"><thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-4 py-3">Tarea</th><th className="px-4 py-3">Peso</th><th className="px-4 py-3">Asignada a</th><th className="px-4 py-3">Origen</th></tr></thead><tbody className="divide-y divide-slate-100">{assignments.map((assignment) => <tr key={assignment.id}><td className="px-4 py-3 font-medium text-slate-800">{assignment.task.name}</td><td className="px-4 py-3 text-slate-600">{assignment.weight.toFixed(1)}</td><td className="px-4 py-3 text-slate-700">{assignment.assignedUser.name}</td><td className="px-4 py-3">{assignment.wasPreferred ? <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-800">Preferencia</span> : <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-800">Equitativo</span>}</td></tr>)}</tbody></table>
             {!isLoading && !plan && <p className="px-4 py-6 text-center text-sm text-slate-500">Todavía no hay reparto para esta semana. Añade tareas y pulsa Generar.</p>}
           </div>
 
