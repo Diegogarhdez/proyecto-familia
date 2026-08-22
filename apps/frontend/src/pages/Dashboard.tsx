@@ -155,10 +155,10 @@ export const Dashboard = () => {
             <div className="text-right">
               <p className="text-sm text-slate-500">Hola</p>
               <div className="flex items-center justify-end gap-2">
-                <p className="text-base font-semibold text-slate-900">{displayName}</p>
                 <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800">
                   {isAdmin ? 'Administrador' : 'Miembro'}
                 </span>
+                <p className="text-base font-semibold text-slate-900">{displayName}</p>
               </div>
               {isAdmin && familyCode ? (
                 <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700">
